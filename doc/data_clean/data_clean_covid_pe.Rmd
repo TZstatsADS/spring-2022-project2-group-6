@@ -20,7 +20,7 @@ library(tidyverse)
 > "This list contains information on approved event applications that will occur within the next month. Please note that Permitted Film Events only reflect those permits which will impact one or more streets for at least five days."
 
 ```{r}
-pe <- read.csv('C:/Users/erinj/Documents/GitHub/spring-2022-project2-group-6/data/NYC_Permitted_Event_Information.csv')
+pe <- read.csv('../../data/NYC_Permitted_Event_Information.csv')
 colnames(pe)
 ```
 
@@ -29,7 +29,7 @@ pe <- pe %>% select(
   Event.Name, Start.Date.Time, End.Date.Time, Event.Type,
   Event.Borough, Event.Location
 )
-write.csv(pe, "C:\\Users\\erinj\\Documents\\GitHub\\spring-2022-project2-group-6\\output\\permitted_events.csv")
+write.csv(pe, "..\\..\\output\\permitted_events.csv")
 ```
 
 # COVID
@@ -43,7 +43,7 @@ write.csv(pe, "C:\\Users\\erinj\\Documents\\GitHub\\spring-2022-project2-group-6
 ## latest
 
 ```{r}
-last7day <- read.csv("C:/Users/erinj/Documents/GitHub/spring-2022-project2-group-6/data/last7days-by-modzcta.csv")
+last7day <- read.csv("../../data/last7days-by-modzcta.csv")
 # the 7 day cases by zip
 colnames(last7day) 
 ```
@@ -53,7 +53,7 @@ last7day <- last7day %>% select(
   modzcta, modzcta_name, lat, lon, people_tested, people_positive,
   percentpositivity_7day, adequately_tested
 ) 
-write.csv(last7day, "C:\\Users\\erinj\\Documents\\GitHub\\spring-2022-project2-group-6\\output\\covid_last7day.csv")
+write.csv(last7day, "..\\..\\output\\covid_last7day.csv")
 ```
 
 Range: Feb 6 - Feb 12
@@ -61,7 +61,7 @@ Range: Feb 6 - Feb 12
 ## trend
 
 ```{r}
-trend <- read.csv('C:/Users/erinj/Documents/GitHub/spring-2022-project2-group-6/data/data-by-day.csv')
+trend <- read.csv('../../data/data-by-day.csv')
 colnames(trend)
 ```
 
@@ -71,14 +71,14 @@ BX: Bronx; MN: Manhattan; QN: Queens; SI: Staten Island
 trend <- trend %>% select(
   date_of_interest:ALL_CASE_COUNT_7DAY_AVG,
 )
-write.csv(trend, "C:\\Users\\erinj\\Documents\\GitHub\\spring-2022-project2-group-6\\output\\covid_trend.csv")
+write.csv(trend, "..\\..\\output\\covid_trend.csv")
 ```
 
 
 ## total
 
 ```{r}
-total <- read.csv('C:/Users/erinj/Documents/GitHub/spring-2022-project2-group-6/data/data-by-modzcta.csv')
+total <- read.csv('../../data/data-by-modzcta.csv')
 colnames(total)
 ```
 
@@ -88,7 +88,7 @@ total_case <- total %>% select(
   COVID_CONFIRMED_CASE_COUNT:COVID_CASE_RATE,
   PERCENT_POSITIVE, TOTAL_COVID_TESTS
 )
-write.csv(total_case, "C:\\Users\\erinj\\Documents\\GitHub\\spring-2022-project2-group-6\\output\\covid_total_case.csv")
+write.csv(total_case, "..\\..\\output\\covid_total_case.csv")
 ```
 
 Case count is the sum of confirmed and probable case count.
@@ -100,6 +100,6 @@ total_death <- total %>% select(
   COVID_CONFIRMED_DEATH_COUNT:COVID_DEATH_RATE,
   PERCENT_POSITIVE, TOTAL_COVID_TESTS
 )
-write.csv(total_death, "C:\\Users\\erinj\\Documents\\GitHub\\spring-2022-project2-group-6\\output\\covid_total_death.csv")
+write.csv(total_death, "..\\..\\output\\covid_total_death.csv")
 ```
 
