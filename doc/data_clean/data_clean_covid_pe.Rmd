@@ -1,0 +1,105 @@
+---
+title: "Data Clean for Covid and Permitted Events"
+author: "Jiachen Liu"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(tidy = TRUE)
+```
+
+```{r, echo = F, message=F}
+library(tidyverse)
+```
+
+
+# Permitted Events
+
+[NYC Permitted Event Information](https://data.cityofnewyork.us/City-Government/NYC-Permitted-Event-Information/qkez-i8mv) *Last accessed: 02/15*
+
+> "This list contains information on approved event applications that will occur within the next month. Please note that Permitted Film Events only reflect those permits which will impact one or more streets for at least five days."
+
+```{r}
+pe <- read.csv('C:/Users/erinj/Documents/GitHub/spring-2022-project2-group-6/data/NYC_Permitted_Event_Information.csv')
+colnames(pe)
+```
+
+```{r}
+pe <- pe %>% select(
+  Event.Name, Start.Date.Time, End.Date.Time, Event.Type,
+  Event.Borough, Event.Location
+)
+write.csv(pe, "C:\\Users\\erinj\\Documents\\GitHub\\spring-2022-project2-group-6\\output\\permitted_events.csv")
+```
+
+# COVID
+
+[NYC Coronavirus Disease Data](https://github.com/nychealth/coronavirus-data) *Last accessed: 02/15*
+
+> "This repository contains data on Coronavirus Disease 2019 (COVID-19) in New York City (NYC). The Health Department classifies the start of the COVID-19 outbreak in NYC as the date of the first laboratory-confirmed case, February 29, 2020."
+
+> "Data are preliminary and subject to change. Information on this page will change as data and documentation are updated. Tables are updated either every weekday (at a 3-day lag), weekly on Thursday (with data through the previous Saturday), or monthly (at a 14-day lag)."
+
+## latest
+
+```{r}
+last7day <- read.csv("C:/Users/erinj/Documents/GitHub/spring-2022-project2-group-6/data/last7days-by-modzcta.csv")
+# the 7 day cases by zip
+colnames(last7day) 
+```
+
+```{r}
+last7day <- last7day %>% select(
+  modzcta, modzcta_name, lat, lon, people_tested, people_positive,
+  percentpositivity_7day, adequately_tested
+) 
+write.csv(last7day, "C:\\Users\\erinj\\Documents\\GitHub\\spring-2022-project2-group-6\\output\\covid_last7day.csv")
+```
+
+Range: Feb 6 - Feb 12
+
+## trend
+
+```{r}
+trend <- read.csv('C:/Users/erinj/Documents/GitHub/spring-2022-project2-group-6/data/data-by-day.csv')
+colnames(trend)
+```
+
+BX: Bronx; MN: Manhattan; QN: Queens; SI: Staten Island
+
+```{r}
+trend <- trend %>% select(
+  date_of_interest:ALL_CASE_COUNT_7DAY_AVG,
+)
+write.csv(trend, "C:\\Users\\erinj\\Documents\\GitHub\\spring-2022-project2-group-6\\output\\covid_trend.csv")
+```
+
+
+## total
+
+```{r}
+total <- read.csv('C:/Users/erinj/Documents/GitHub/spring-2022-project2-group-6/data/data-by-modzcta.csv')
+colnames(total)
+```
+
+```{r}
+total_case <- total %>% select(
+  MODIFIED_ZCTA, NEIGHBORHOOD_NAME, BOROUGH_GROUP, lat, lon, POP_DENOMINATOR,
+  COVID_CONFIRMED_CASE_COUNT:COVID_CASE_RATE,
+  PERCENT_POSITIVE, TOTAL_COVID_TESTS
+)
+write.csv(total_case, "C:\\Users\\erinj\\Documents\\GitHub\\spring-2022-project2-group-6\\output\\covid_total_case.csv")
+```
+
+Case count is the sum of confirmed and probable case count.
+POP_DENOMINATOR: Population denominators for MODZCTA derived from intercensal estimates by the Bureau of Epidemiology Services
+
+```{r}
+total_death <- total %>% select(
+  MODIFIED_ZCTA, NEIGHBORHOOD_NAME, BOROUGH_GROUP, lat, lon, POP_DENOMINATOR,
+  COVID_CONFIRMED_DEATH_COUNT:COVID_DEATH_RATE,
+  PERCENT_POSITIVE, TOTAL_COVID_TESTS
+)
+write.csv(total_death, "C:\\Users\\erinj\\Documents\\GitHub\\spring-2022-project2-group-6\\output\\covid_total_death.csv")
+```
+
