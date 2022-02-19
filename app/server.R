@@ -60,6 +60,15 @@ if (!require("dygraphs")) {
   library(dygraphs)
 }
 
+if (!require("tigris")) { 
+  install.packages("tigris")
+  library(geojsonio)
+}
+if (!require("htmltools")) {
+  install.packages("htmltools")
+  library(htmltools)
+}
+
 # import data
 bike_count <- read.csv('../output/Processed-bikecount-month.csv')
 bike_count_boroughs <- read.csv('../output/Processed-bikecount-month-boroughs.csv')
@@ -67,6 +76,8 @@ open_streets_geo <- geojsonio::geojson_read("../data/Open Streets Locations.geoj
 open_streets <- read.csv('../output/Processed_Open_Streets_Locations.csv')
 arrests <- read.csv('../output/NYPD_Arrests_Data_Recent.csv')
 shootings <- read.csv('../output/NYPD_Shooting_Data_Recent.csv')
+covid7day <- read.csv('../output/covid_last7day.csv')
+covid_total <- read.csv('../output/covid_total_case.csv')
 
 # Get Data
 shinyServer(function(input, output) {
@@ -352,6 +363,57 @@ shinyServer(function(input, output) {
         hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
         hc_caption( align = 'center', style = list(color = "black"), text = 'Caption')
     }
+  })
+  
+  ##############################################################################
+  # COVID HEAT tab
+  ##############################################################################
+  
+  options(tigris_use_cache = TRUE)
+  
+  zcta <- zctas(starts_with = c(10, 11), year = 2010, state = "New York") %>%
+    mutate("ZCTA5CE10" = as.numeric(ZCTA5CE10))
+  
+  type <- reactive({
+    if(input$type == "7-Day"){
+      return(covid7day %>% select(modzcta, "case" = people_positive))
+    }
+    
+    if(input$type == 'Total'){
+      return(covid_total %>% select(modzcta, "case" = COVID_CASE_COUNT))
+    }
+  })
+  
+  output$heatmap <- renderLeaflet({
+    zcta <- geo_join(zcta, type(), by_sp = "ZCTA5CE10",
+                     by_df = "modzcta", how = "left") %>% drop_na()
+    
+    if (input$type == "7-Day"){
+      pal <- colorNumeric(
+        palette = "Reds", domain = zcta$case
+      )
+    }
+    
+    if (input$type == "Total"){
+      pal <- colorNumeric(
+        palette = "Purples", domain = zcta$case
+      )
+    }
+    
+    labels <- paste0("zip code: ", zcta$ZCTA5CE10,"<br/>",
+                     "case number: ", zcta$case) %>%
+      lapply(htmltools::HTML)
+    
+    zcta %>% ungroup() %>% leaflet %>%
+      addProviderTiles("CartoDB") %>%
+      addPolygons(fillColor = ~pal(case), weight = 1, opacity = 1,
+                  color = "white", dashArray = "2", fillOpacity = 0.7,
+                  label = labels) %>%
+      addLegend(pal = pal,
+                values = ~case,
+                title = "COVID MAP",
+                position = "topright")
+    
   })
   
   

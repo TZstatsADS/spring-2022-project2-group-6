@@ -63,7 +63,9 @@ shinyUI(dashboardPage(
                menuSubItem("How Covid has affected crimes", tabName = "Crimes", icon = icon("skull-crossbones")),
                menuSubItem("How Covid has affected bike usage", tabName = "Bikes", icon = icon("biking")),
                menuSubItem("How Covid has affected restaurants", tabName = "Restaurants", icon = icon("utensils"))),
-      menuItem("Restaurants Map", tabName = "Restaurants_map", icon = icon("map")),
+      menuItem("Restaurants Map", tabName = "Restaurants_map", icon = icon("map"),
+               startExpanded = TRUE,
+               menuSubItem("COVID 7-Day Map", tabName = "covid_heat", icon = icon("virus"))),
       menuItem("About", tabName="About", icon = icon("info"))
     )
   ),
@@ -205,6 +207,18 @@ shinyUI(dashboardPage(
         tabName = "Restaurants_map",
         fluidPage(
           
+        )
+      ),
+      
+      tabItem(
+        tabName = "covid_heat",
+        fluidPage(
+          sidebarLayout(
+            sidebarPanel(
+              selectInput("type", "Type", 
+                          choices = c("7-Day", "Total"))),
+            mainPanel(leafletOutput("heatmap"))
+          )
         )
       ),
 
