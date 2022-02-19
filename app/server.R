@@ -125,10 +125,10 @@ shinyServer(function(input, output) {
       )%>%
       hc_xAxis( categories = unique(arrests_by_month_year$Month_Year),
                 plotLines = list(
-                  list(label = list(text = "This is a plotLine"),
-                       color = "#FF0000",
+                  list(label = list(text = "Covid start"),
+                       color = "#d25b5b",
                        width = 2,
-                       value = "03/2020")
+                       value = 19.5)
                 )
       ) %>%
       hc_yAxis( title = list(text = "Number of Arrests")) %>%
