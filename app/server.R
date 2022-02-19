@@ -59,10 +59,9 @@ if (!require("dygraphs")) {
   install.packages("dygraphs")
   library(dygraphs)
 }
-
 if (!require("tigris")) { 
   install.packages("tigris")
-  library(geojsonio)
+  library(tigris)
 }
 if (!require("htmltools")) {
   install.packages("htmltools")
