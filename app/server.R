@@ -35,186 +35,150 @@ if (!require("leafsync")) {
     install.packages("leafsync")
     library(leafsync)
 }
+if (!require("tidyverse")) {
+  install.packages("tidyverse")
+  library(tidyverse)
+}
+if (!require("timetk")) {
+  install.packages("timetk")
+  library(timetk)
+}
+if (!require("kableExtra")) {
+  install.packages("kableExtra")
+  library(kableExtra)
+}
+if (!require("highcharter")) {
+  install.packages("highcharter")
+  library(highcharter)
+}
 
-#Get Data
-bike_count = read.csv('../output/Processed-bikecount-month.csv')
+# Get Data
 shinyServer(function(input, output) {
   
+  # import data
+  bike_count = read.csv('../output/Processed-bikecount-month.csv')
+  bike_count_boroughs = read.csv('../output/Processed-bikecount-month-boroughs.csv')
   
-  output$bike_count <- renderPlotly({
-    if (input$bike_count_period == 1 && input$bike_count_borough == 5){
-      plotly::plot_ly(bike_count,
-                      x= ~ Year,
-                      y = ~ total,
-                      type = 'bar')}
-    
+  
+  
+  ##############################################################################
+  # Bikes tab
+  ##############################################################################
+  
+  bike_count_boroughs <- subset(bike_count_boroughs, borough!="Queens" & borough!="Staten Island")
+  
+  bike_count_per_year <- bike_count_boroughs %>% 
+                         group_by(Year) %>% 
+                         summarise(Total_count = sum(total))
+  
+  bike_count_per_year_per_borough <- bike_count_boroughs %>% 
+                                      group_by(borough, Year) %>% 
+                                      summarise(Total_count = sum(total))
+  
+  bike_count_per_year_per_borough <- subset(bike_count_per_year_per_borough, borough!="Queens" & borough!="Staten Island")
+  
+  bike_count_per_month <- bike_count_boroughs %>% 
+    group_by(Month, Year, borough) %>% 
+    summarise(Total_count = sum(total))
+  
+  bike_count_per_month_from_2017 <- subset(bike_count_per_month, Year>=2017)
+  
+  bike_count_per_quarter_from_2017 <- bike_count_per_month_from_2017
+  bike_count_per_quarter_from_2017$Month <- replace(bike_count_per_quarter_from_2017$Month, 
+                                                    bike_count_per_quarter_from_2017$Month==2 | 
+                                                      bike_count_per_quarter_from_2017$Month==3 |
+                                                      bike_count_per_quarter_from_2017$Month==4, 1)
+  bike_count_per_quarter_from_2017$Month <- replace(bike_count_per_quarter_from_2017$Month, 
+                                                    bike_count_per_quarter_from_2017$Month==5 | 
+                                                      bike_count_per_quarter_from_2017$Month==6 |
+                                                      bike_count_per_quarter_from_2017$Month==7 |
+                                                      bike_count_per_quarter_from_2017$Month==8, 2)
+  bike_count_per_quarter_from_2017$Month <- replace(bike_count_per_quarter_from_2017$Month, 
+                                                    bike_count_per_quarter_from_2017$Month==9 | 
+                                                      bike_count_per_quarter_from_2017$Month==10 |
+                                                      bike_count_per_quarter_from_2017$Month==11 |
+                                                      bike_count_per_quarter_from_2017$Month==12, 3)
+ 
+  bike_count_per_quarter_from_2017_per_borough <- bike_count_per_quarter_from_2017 %>% 
+    group_by(Month, Year, borough) %>% 
+    summarise(Total_count = sum(Total_count))
+  
+  bike_count_per_quarter_from_2017 <- bike_count_per_quarter_from_2017 %>% 
+    group_by(Month, Year) %>% 
+    summarise(Total_count = sum(Total_count))
+  
+  # output$mytable = DT::renderDataTable({
+  #   bike_count_per_quarter_from_2017_per_borough
+  # })
+  
+  output$bike_count_year <- renderHighchart({
+    highchart() %>%
+      hc_exporting(enabled = TRUE, formAttributes = list(target = "_blank")) %>%
+      hc_chart(type = 'line') %>%
+      hc_series( list(name = 'Total', data =bike_count_per_year$Total_count, color='#0099ae', marker = list(symbol = 'circle') ),
+                 list(name = 'Manhattan', data =bike_count_per_year_per_borough$Total_count[bike_count_per_year_per_borough$borough=='Manhattan'], color = '#02216f', marker = list(symbol = 'circle') ),
+                 list(name = 'Brooklyn', data =bike_count_per_year_per_borough$Total_count[bike_count_per_year_per_borough$borough=='Brooklyn'], color = '#6581BF', marker = list(symbol = 'circle') )
+      )%>%
+      hc_xAxis( categories = unique(bike_count_per_year_per_borough$Year) ) %>%
+      hc_yAxis( title = list(text = "Number of bikes")) %>%
+      hc_plotOptions(column = list(
+        dataLabels = list(enabled = F),
+        #stacking = "normal",
+        enableMouseTracking = T ) 
+      )%>%
+      hc_tooltip(table = TRUE,
+                 sort = TRUE,
+                 pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
+                                       " {series.name}: {point.y}"),
+                 headerFormat = '<span style="font-size: 13px">Year {point.key}</span>'
+      ) %>%
+      hc_title(text = "TITLE") %>%
+      hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 100, y = 000 ) %>%
+      hc_caption( align = 'center', style = list(color = "black"), text = '2021 had data only till August')
   })
-
+  
+  output$bike_count_month <- renderHighchart({
+     if (input$bike_count_borough_month == 3) {
+        hchart(bike_count_per_quarter_from_2017, "column",
+               hcaes(x = Month, y = Total_count, group = Year)) %>%
+          hc_chart(zoomType = "x") %>%
+          hc_legend(align = "center", verticalAlign = "bottom",layout = "horizontal") %>%
+          hc_xAxis(title = list(text = "Trimester")) %>%
+          hc_yAxis(title = list(text = "Number or bikes"),
+                   max = max(bike_count_per_quarter_from_2017$Total_count)) %>%
+          hc_title(text = "TITLE") %>%
+          hc_caption( align = 'center', style = list(color = "black"), text = '2021 had data only till August')  %>%
+          hc_exporting(enabled = TRUE) %>%
+          hc_colors(c("#D7DCEA", "#A1B3D7", "#6581BF", "#2F57AB", "#0B389D"))
+    }
+    
+    else if (input$bike_count_borough_month == 1) {
+      hchart(subset(bike_count_per_quarter_from_2017_per_borough, borough=="Manhattan"), "column",
+             hcaes(x = Month, y = Total_count, group = Year)) %>%
+        hc_chart(zoomType = "x") %>%
+        hc_legend(align = "center", verticalAlign = "bottom",layout = "horizontal") %>%
+        hc_xAxis(title = list(text = "Trimester")) %>%
+        hc_yAxis(title = list(text = "Number or bikes"),
+                 max = max(bike_count_per_quarter_from_2017_per_borough$Total_count)) %>%
+        hc_title(text = "TITLE") %>%
+        hc_caption( align = 'center', style = list(color = "black"), text = '2021 had data only till August')  %>%
+        hc_exporting(enabled = TRUE) %>%
+        hc_colors(c("#D7DCEA", "#A1B3D7", "#6581BF", "#2F57AB", "#0B389D"))
+    }
+    
+    else if (input$bike_count_borough_month == 2) {
+      hchart(subset(bike_count_per_quarter_from_2017_per_borough, borough=="Brooklyn"), "column",
+             hcaes(x = Month, y = Total_count, group = Year)) %>%
+        hc_chart(zoomType = "x") %>%
+        hc_legend(align = "center", verticalAlign = "bottom",layout = "horizontal") %>%
+        hc_xAxis(title = list(text = "Trimester")) %>%
+        hc_yAxis(title = list(text = "Number or bikes"),
+                 max = max(bike_count_per_quarter_from_2017_per_borough$Total_count)) %>%
+        hc_title(text = "TITLE") %>%
+        hc_caption( align = 'center', style = list(color = "black"), text = '2021 had data only till August')  %>%
+        hc_exporting(enabled = TRUE) %>%
+        hc_colors(c("#D7DCEA", "#A1B3D7", "#6581BF", "#2F57AB", "#0B389D"))
+    }
+  })
+  
 })
-
-# #Data Processing
-# total_citi_bike_df = read.csv('../data/citibike_data.csv')
-# ##compute the daily in and out difference for the station
-# total_citi_bike_df$day_diff = total_citi_bike_df$endcount - total_citi_bike_df$startcount
-# #assign each column to weekend or weekday
-# total_citi_bike_df$weekend_or_weekday = ifelse(total_citi_bike_df$weekday %in% c('Saturday','Sunday'), "Weekend", "Weekday")
-# 
-# #station info
-# citi_bike_station_info <- total_citi_bike_df[,c('station_id','station_name','station_longitude','station_latitude')]
-# #remove the duplicates based on station id 
-# citi_bike_station_info <- citi_bike_station_info[!duplicated(citi_bike_station_info[ , c("station_id")]),]
-# 
-# #split the bike data to pre-covid and covid time period
-# citi_bike_pre_covid_df = total_citi_bike_df[difftime(total_citi_bike_df$date,"2019-05-31")<=0,] #2019-05-01 ~ 2019-05-31
-# citi_bike_covid_df = total_citi_bike_df[difftime(total_citi_bike_df$date,"2020-04-30")>=0,] #2020-05-01 ~ 2021-05-31
-# 
-# 
-# # Define server logic required to draw a histogram
-# shinyServer(function(input, output) {
-# 
-#     ## Map Tab section
-#     
-#     output$left_map <- renderLeaflet({
-#     
-#     #adjust for weekday/weekend effect
-#     if (input$adjust_time =='Overall') {
-#         leaflet_plt_df <- citi_bike_pre_covid_df %>% 
-#                             group_by(station_id) %>%
-#                             summarise(total_start_count = sum(startcount),
-#                                       total_end_count = sum(endcount),
-#                                       total_day_diff = sum(day_diff),
-#                                       total_diff_percentage = sum(day_diff)/sum(startcount),
-#                             ) %>% left_join(citi_bike_station_info,by='station_id')
-#     } else {
-#         leaflet_plt_df <- citi_bike_pre_covid_df %>% 
-#                             filter(weekend_or_weekday == input$adjust_time) %>%
-#                             group_by(station_id) %>%
-#                                 summarise(total_start_count = sum(startcount),
-#                                           total_end_count = sum(endcount),
-#                                           total_day_diff = sum(day_diff),
-#                                           total_diff_percentage = sum(day_diff)/sum(startcount),
-#                                 ) %>% left_join(citi_bike_station_info,by='station_id')
-#                             } 
-# 
-#         
-#     map_2019 <- leaflet_plt_df %>%
-#          leaflet(options = leafletOptions(minZoom = 11, maxZoom = 13)) %>%
-#          addTiles() %>%
-#          addProviderTiles("CartoDB.Positron",
-#                           options = providerTileOptions(noWrap = TRUE)) %>%
-#          setView(-73.9834,40.7504,zoom = 12)
-#      
-#      if (input$adjust_score == 'start_cnt') {
-#          map_2019 %>%
-#              addHeatmap(
-#                         lng=~station_longitude,
-#                         lat=~station_latitude,
-#                         intensity=~total_start_count,
-#                         max=4000,
-#                         radius=8,
-#                         blur=10)
-#      }else if (input$adjust_score == 'end_cnt') {
-#          map_2019 %>%
-#              addHeatmap(
-#                         lng=~station_longitude,
-#                         lat=~station_latitude,
-#                         intensity=~total_end_count,
-#                         max=4000,
-#                         radius=8,
-#                         blur=10)
-#      } else if (input$adjust_score == 'day_diff_absolute'){
-#          map_2019 %>%
-#              addHeatmap(
-#                         lng=~station_longitude,
-#                         lat=~station_latitude,
-#                         intensity=~total_day_diff,
-#                         max=50,
-#                         radius=8,
-#                         blur=10)
-#          
-#      }else if (input$adjust_score == 'day_diff_percentage'){
-#          map_2019 %>%
-#              addHeatmap(
-#                         lng=~station_longitude,
-#                         lat=~station_latitude,
-#                         intensity=~total_diff_percentage,#change to total day diff percentage
-#                         max=0.1,
-#                         radius=8,
-#                         blur=10)
-#          
-#      }
-#      }) #left map plot
-#     
-#     output$right_map <- renderLeaflet({
-#         #adjust for weekday/weekend effect
-#         if (input$adjust_time =='Overall') {
-#             leaflet_plt_df <- citi_bike_covid_df %>% 
-#                 group_by(station_id) %>%
-#                 summarise(total_start_count = sum(startcount),
-#                           total_end_count = sum(endcount),
-#                           total_day_diff = sum(day_diff),
-#                           total_diff_percentage = sum(day_diff)/sum(startcount),
-#                 ) %>% left_join(citi_bike_station_info,by='station_id')
-#         } else {
-#             leaflet_plt_df <- citi_bike_covid_df %>% 
-#                 filter(weekend_or_weekday == input$adjust_time) %>%
-#                 group_by(station_id) %>%
-#                 summarise(total_start_count = sum(startcount),
-#                           total_end_count = sum(endcount),
-#                           total_day_diff = sum(day_diff),
-#                           total_diff_percentage = sum(day_diff)/sum(startcount),
-#                 ) %>% left_join(citi_bike_station_info,by='station_id')
-#         } 
-#         #initial the map to plot on
-#         map_2020 <- leaflet_plt_df %>%
-#             leaflet(options = leafletOptions(minZoom = 11, maxZoom = 13)) %>%
-#             addTiles() %>%
-#             addProviderTiles("CartoDB.Positron",
-#                              options = providerTileOptions(noWrap = TRUE)) %>%
-#             setView(-73.9834,40.7504,zoom = 12) 
-#         
-#         if (input$adjust_score == 'start_cnt') {
-#             map_2020 %>%
-#                 addHeatmap(
-#                            lng=~station_longitude,
-#                            lat=~station_latitude,
-#                             intensity=~total_start_count, #change to total start count
-#                             max=4000,
-#                             radius=8,
-#                            blur=10)
-#         }else if (input$adjust_score == 'end_cnt') {
-#             map_2020 %>%
-#                 addHeatmap(
-#                            lng=~station_longitude,
-#                            lat=~station_latitude,
-#                            intensity=~total_end_count,#change to total end count
-#                            max=4000,
-#                            radius=8,
-#                            blur=10)
-#         } else if (input$adjust_score == 'day_diff_absolute'){
-#             map_2020 %>%
-#                 addHeatmap(
-#                            lng=~station_longitude,
-#                            lat=~station_latitude,
-#                            intensity=~total_day_diff,#change to total day diff
-#                            max=50,
-#                            radius=8,
-#                            blur=10)
-#             
-#         }else if (input$adjust_score == 'day_diff_percentage'){
-#             map_2020 %>%
-#                 addHeatmap(
-#                            lng=~station_longitude,
-#                            lat=~station_latitude,
-#                            intensity=~total_diff_percentage,#change to total day diff percentage
-#                            max=0.1,
-#                            radius=8,
-#                            blur=10)
-#             
-#         }
-#         
-#     }) #right map plot
-# 
-# })
-
-

@@ -27,6 +27,22 @@ if (!require("plotly")) {
   install.packages("plotly")
   library(plotly)
 }
+if (!require("tidyverse")) {
+  install.packages("tidyverse")
+  library(tidyverse)
+}
+if (!require("timetk")) {
+  install.packages("timetk")
+  library(timetk)
+}
+if (!require("kableExtra")) {
+  install.packages("kableExtra")
+  library(kableExtra)
+}
+if (!require("highcharter")) {
+  install.packages("highcharter")
+  library(highcharter)
+}
 
 shinyUI(dashboardPage(
   
@@ -86,45 +102,38 @@ shinyUI(dashboardPage(
         tabName = "Bikes",
         h4("Discussion about bikes and Covid"),
         
+        #DT::dataTableOutput("mytable"),
+        
         box(width = 400,
-            h4("Plot description"),
+            h4("Number of bikes over time", align = 'center'),
             br(),
             
             fluidPage(
-              sidebarLayout(
-                sidebarPanel(
-                  
-                  selectInput("bike_count_period", 
-                              label = "Bike Count Period",
-                              choices = c("Per Year" = 1,
-                                          "Per Month" = 2), 
-                              selected = 1),
-                  selectInput("bike_count_borough", 
-                              label = "Bike Count Borrow",
-                              choices = c("Manhattan" = 1,
-                                          "Brooklyn" = 2,
-                                          "Queens" = 3,
-                                          "Staten Island" = 4,
-                                          "All" = 5), 
-                              selected = 5)
+              fluidRow( 
+                column( width = 6,
+                        highchartOutput("bike_count_year")
                 ),
-                mainPanel(
-                   plotlyOutput("bike_count")
-                ))
-              
+                column( width = 6,
+                        sidebarLayout(
+                          sidebarPanel(
+                            width = 3,
+                            selectInput("bike_count_borough_month", 
+                                        label = "Bike Count Borrow",
+                                        choices = c("Manhattan" = 1,
+                                                    "Brooklyn" = 2,
+                                                    "All" = 3), 
+                                        selected = 3)
+                          ),
+                          mainPanel(
+                            highchartOutput("bike_count_month")
+                          ))
+                ),
+                br(),
+                br(),
+                h5("Discuss plots", align = 'center', style="font-weight: bold")
+              )
             )
-            
         )
-        
-        
-        # fluidPage(
-        #   wellPanel(
-        #     selectInput("select", label = h3("Select box"), 
-        #                 choices = list("Per Year" = 1, "Per Month" = 2), selected = 1),
-        #     hr(),
-        #     
-        #   )
-        # )
       ),
       
       tabItem(
@@ -154,59 +163,5 @@ shinyUI(dashboardPage(
       
     )
   )
-  
 
 ))
-
-# # Define UI for application that draws a histogram
-# shinyUI(
-#     navbarPage(strong("Citi Bike Study",style="color: white;"),
-#                theme=shinytheme("cerulean"), # select your themes https://rstudio.github.io/shinythemes/
-# #------------------------------- tab panel - Maps ---------------------------------
-#                 tabPanel("Maps",
-#                          icon = icon("map-marker-alt"), #choose the icon for
-#                          div(class = 'outer',
-#                         # side by side plots
-#                         fluidRow(
-#                                 splitLayout(cellWidths = c("50%", "50%"),
-#                                              leafletOutput("left_map",width="100%",height=1200),
-#                                              leafletOutput("right_map",width="100%",height=1200))),
-#                         #control panel on the left
-#                         absolutePanel(id = "control", class = "panel panel-default", fixed = TRUE, draggable = TRUE,
-#                                       top = 200, left = 50, right = "auto", bottom = "auto", width = 250, height = "auto",
-#                                       tags$h4('Citi Bike Activity Comparison'),
-#                                       tags$br(),
-#                                       tags$h5('Pre-covid(Left) Right(Right)'),
-#                                       prettyRadioButtons(
-#                                                       inputId = "adjust_score",
-#                                                       label = "Score List:",
-#                                                       choices = c("start_cnt",
-#                                                                   "end_cnt",
-#                                                                   "day_diff_absolute",
-#                                                                   "day_diff_percentage"),
-#                                                       inline = TRUE,
-#                                                       status = "danger",
-#                                                       fill = TRUE
-#                                                         ),
-#                                       awesomeRadio("adjust_time",
-#                                                    label="Time",
-#                                                     choices =c("Overall",
-#                                                                "Weekday",
-#                                                                "Weekend"),
-#                                                     selected = "Overall",
-#                                                     status = "warning"),
-#                                       # selectInput('adjust_weather',
-#                                       #             label = 'Adjust for Weather',
-#                                       #             choices = c('Yes','No'),
-#                                       #             selected = 'Yes'
-#                                       #             ),
-#                                       style = "opacity: 0.80"
-# 
-#                                 ), #Panel Control - Closing
-#                             ) #Maps - Div closing
-#                         ) #tabPanel maps closing
-# 
-# 
-# 
-#     ) #navbarPage closing
-# ) #Shiny UI closing
