@@ -123,7 +123,14 @@ shinyServer(function(input, output) {
       hc_chart(type = 'line') %>%
       hc_series( list(name = use_name, data =use_data, color=use_color, marker = list(symbol = 'circle') )
       )%>%
-      hc_xAxis( categories = unique(arrests_by_month_year$Month_Year) ) %>%
+      hc_xAxis( categories = unique(arrests_by_month_year$Month_Year),
+                plotLines = list(
+                  list(label = list(text = "This is a plotLine"),
+                       color = "#FF0000",
+                       width = 2,
+                       value = "03/2020")
+                )
+      ) %>%
       hc_yAxis( title = list(text = "Number of Arrests")) %>%
       hc_plotOptions(column = list(
         dataLabels = list(enabled = F),
@@ -134,7 +141,7 @@ shinyServer(function(input, output) {
                  sort = TRUE,
                  pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
                                        " {series.name}: {point.y}"),
-                 headerFormat = '<span style="font-size: 13px">Year {point.key}</span>'
+                 headerFormat = '<span style="font-size: 13px">Month/Year {point.key}</span>'
       ) %>%
       hc_title(text = "TITLE") %>%
       hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
@@ -239,7 +246,13 @@ shinyServer(function(input, output) {
       hc_title(text = "TITLE") %>%
       hc_caption( align = 'center', style = list(color = "black"), text = '2021 had data only till August')  %>%
       hc_exporting(enabled = TRUE) %>%
-      hc_colors(c("#D7DCEA", "#A1B3D7", "#6581BF", "#2F57AB", "#0B389D"))
+      hc_colors(c("#D7DCEA", "#A1B3D7", "#6581BF", "#2F57AB", "#0B389D")) %>%
+      hc_tooltip(table = TRUE,
+                 sort = TRUE,
+                 pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
+                                       " {series.name}: {point.y}"),
+                 headerFormat = '<span style="font-size: 13px">Trimester {point.key}</span>'
+      )
     
   })
   
@@ -298,7 +311,7 @@ shinyServer(function(input, output) {
                    sort = TRUE,
                    pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
                                          " {series.name}: {point.y}"),
-                   headerFormat = '<span style="font-size: 13px">Year {point.key}</span>'
+                   headerFormat = '<span style="font-size: 13px">Date {point.key}</span>'
         ) %>%
         hc_title(text = "Open Streets Approvals") %>%
         hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
@@ -333,7 +346,7 @@ shinyServer(function(input, output) {
                    sort = TRUE,
                    pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
                                          " {series.name}: {point.y}"),
-                   headerFormat = '<span style="font-size: 13px">Year {point.key}</span>'
+                   headerFormat = '<span style="font-size: 13px">Date {point.key}</span>'
         ) %>%
         hc_title(text = "Open Streets Approvals") %>%
         hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
