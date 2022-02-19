@@ -55,6 +55,10 @@ if (!require("geojsonio")) {
   install.packages("geojsonio")
   library(geojsonio)
 }
+if (!require("dygraphs")) {
+  install.packages("dygraphs")
+  library(dygraphs)
+}
 
 # Get Data
 shinyServer(function(input, output) {
@@ -69,6 +73,10 @@ shinyServer(function(input, output) {
   
   ##############################################################################
   # Bikes tab
+  ##############################################################################
+  
+  ##############################################################################
+  # Bikes
   ##############################################################################
   
   bike_count_boroughs <- subset(bike_count_boroughs, borough!="Queens" & borough!="Staten Island")
@@ -112,10 +120,6 @@ shinyServer(function(input, output) {
   bike_count_per_quarter_from_2017 <- bike_count_per_quarter_from_2017 %>% 
     group_by(Month, Year) %>% 
     summarise(Total_count = sum(Total_count))
-  
-  # output$mytable = DT::renderDataTable({
-  #   bike_count_per_quarter_from_2017_per_borough
-  # })
   
   output$bike_count_year <- renderHighchart({
     highchart() %>%
@@ -187,6 +191,10 @@ shinyServer(function(input, output) {
     }
   })
   
+  ##############################################################################
+  # Bikes Open Streets
+  ##############################################################################
+  
   output$open_streets_map <- renderLeaflet({
     leaflet() %>%
       clearShapes() %>%
@@ -197,5 +205,99 @@ shinyServer(function(input, output) {
       addPolylines(data=open_streets_geo, color="#0B389D", weight=3, opacity=1, label = lapply(open_streets$Label, htmltools::HTML), popup = open_streets$Hours, 
                    highlightOptions = highlightOptions(bringToFront = TRUE, opacity = 1, weight = 5, sendToBack = FALSE, color = "white"))
   })
+  
+  open_streets_dates <- data.frame(open_streets$StartDate) 
+  names(open_streets_dates)[names(open_streets_dates) == 'open_streets.StartDate'] <- 'StartDate'
+  open_streets_dates$count <- 1
+  open_streets_dates <- open_streets_dates %>% 
+    group_by(StartDate) %>% 
+    summarise(Total_count = sum(count))
+  open_streets_dates <- open_streets_dates[order(open_streets_dates$StartDate),]
+  open_streets_dates_aggregate <- open_streets_dates
+  
+  open_streets_dates_aggregate$Aggregate <- 0
+  # for every row in DT
+  counter <- 0
+  for (i in 1:length(open_streets_dates_aggregate$StartDate)) {
+    if(i==1) {
+      counter <- counter + open_streets_dates_aggregate[i,2]
+      open_streets_dates_aggregate[i,3] <- counter
+    } else {
+      #D = C + BPreviousRow
+      counter <- counter + open_streets_dates_aggregate[i,2]
+      open_streets_dates_aggregate[i,3] <- counter
+    }
+  }
+  
+  #open_streets_dates_aggregate <- mutate(open_streets_dates_aggregate, Aggregate = lag(Aggregate) + Total_count)
+
+  
+  output$open_streets_dates <- renderHighchart({
+    if (input$per_day & input$aggregated){
+      highchart() %>%
+        hc_exporting(enabled = TRUE, formAttributes = list(target = "_blank")) %>%
+        hc_chart(type = 'line') %>%
+        hc_series( list(name = 'Per Day', data = open_streets_dates$Total_count, color='#6581BF', marker = list(symbol = 'circle') ),
+                   list(name = 'Aggregate', data =open_streets_dates_aggregate$Aggregate, color = '#02216f', marker = list(symbol = 'circle') )
+        )%>%
+        hc_xAxis( categories = unique(open_streets_dates$StartDate) ) %>%
+        hc_yAxis( title = list(text = "Number of approvals")) %>%
+        hc_plotOptions(column = list(
+          dataLabels = list(enabled = F),
+          #stacking = "normal",
+          enableMouseTracking = T ) 
+        )%>%
+        hc_tooltip(table = TRUE,
+                   sort = TRUE,
+                   pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
+                                         " {series.name}: {point.y}"),
+                   headerFormat = '<span style="font-size: 13px">Year {point.key}</span>'
+        ) %>%
+        hc_title(text = "Open Streets Approvals") %>%
+        hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
+        hc_caption( align = 'center', style = list(color = "black"), text = 'Caption')
+    }
+    else if (!input$per_day & !input$aggregated) {
+    }
+    else{
+      if (input$per_day){
+        use_name <- 'Per Day'
+        use_data <- open_streets_dates$Total_count
+        use_color <- '#6581BF'
+      }
+      if (input$aggregated){
+        use_name <- 'Aggregated'
+        use_data <- open_streets_dates_aggregate$Aggregate
+        use_color <- '#02216f'
+      }
+      highchart() %>%
+        hc_exporting(enabled = TRUE, formAttributes = list(target = "_blank")) %>%
+        hc_chart(type = 'line') %>%
+        hc_series( list(name = use_name, data = use_data, color=use_color, marker = list(symbol = 'circle') )
+        )%>%
+        hc_xAxis( categories = unique(open_streets_dates$StartDate) ) %>%
+        hc_yAxis( title = list(text = "Number of approvals")) %>%
+        hc_plotOptions(column = list(
+          dataLabels = list(enabled = F),
+          #stacking = "normal",
+          enableMouseTracking = T ) 
+        )%>%
+        hc_tooltip(table = TRUE,
+                   sort = TRUE,
+                   pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
+                                         " {series.name}: {point.y}"),
+                   headerFormat = '<span style="font-size: 13px">Year {point.key}</span>'
+        ) %>%
+        hc_title(text = "Open Streets Approvals") %>%
+        hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
+        hc_caption( align = 'center', style = list(color = "black"), text = 'Caption')
+    }
+  })
+  
+  # output$mytable = DT::renderDataTable({
+  #   open_streets_dates_aggregate
+  # })
+  
+  
   
 })

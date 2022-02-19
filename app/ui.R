@@ -43,6 +43,10 @@ if (!require("highcharter")) {
   install.packages("highcharter")
   library(highcharter)
 }
+if (!require("dygraphs")) {
+  install.packages("dygraphs")
+  library(dygraphs)
+}
 
 shinyUI(dashboardPage(
   
@@ -117,6 +121,7 @@ shinyUI(dashboardPage(
                         sidebarLayout(
                           sidebarPanel(
                             width = 3,
+                            
                             selectInput("bike_count_borough_month", 
                                         label = "Bike Count Borrow",
                                         choices = c("Manhattan" = 1,
@@ -132,6 +137,7 @@ shinyUI(dashboardPage(
                 br(),
                 h5("Discuss plots", align = 'center', style="font-weight: bold")
               )
+              #DT::dataTableOutput("mytable")
             )
         ),
         box(width = 400,
@@ -140,18 +146,30 @@ shinyUI(dashboardPage(
             
             fluidPage(
               fluidRow( 
-                column( width = 6
+                column( width = 12,
+                        sidebarLayout(
+                          sidebarPanel(
+                            width = 2,
+                            checkboxInput("per_day", label = "Per Day", value = TRUE),
+                            checkboxInput("aggregated", label = "Aggregated", value = FALSE)
+                          ),
+                          mainPanel(
+                            highchartOutput("open_streets_dates")
+                          )
+                        )
                 ),
-                column( width = 6,
+              fluidRow( 
+                column( width = 12,
                         h3("TITLE", align = 'center'),
-                        leafletOutput("open_streets_map", width="100%", height=800))
-                ),
+                        leafletOutput("open_streets_map", width="100%", height=800)
+                      )
+              ),
                 br(),
                 br(),
                 h5("Discuss plots", align = 'center', style="font-weight: bold")
-              )
+            )
           )
-      ),
+      )),
       
       tabItem(
         tabName = "Restaurants",
@@ -177,7 +195,6 @@ shinyUI(dashboardPage(
           h1("Code",align = "center", style="font-weight: bold")
         )
       )
-      
-    )
-)
-))
+    
+  )
+)))
