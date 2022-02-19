@@ -148,47 +148,27 @@ shinyServer(function(input, output) {
   })
   
   output$bike_count_month <- renderHighchart({
-     if (input$bike_count_borough_month == 3) {
-        hchart(bike_count_per_quarter_from_2017, "column",
-               hcaes(x = Month, y = Total_count, group = Year)) %>%
-          hc_chart(zoomType = "x") %>%
-          hc_legend(align = "center", verticalAlign = "bottom",layout = "horizontal") %>%
-          hc_xAxis(title = list(text = "Trimester")) %>%
-          hc_yAxis(title = list(text = "Number or bikes"),
-                   max = max(bike_count_per_quarter_from_2017$Total_count)) %>%
-          hc_title(text = "TITLE") %>%
-          hc_caption( align = 'center', style = list(color = "black"), text = '2021 had data only till August')  %>%
-          hc_exporting(enabled = TRUE) %>%
-          hc_colors(c("#D7DCEA", "#A1B3D7", "#6581BF", "#2F57AB", "#0B389D"))
+    if (input$bike_count_borough_month == 3) {
+      use_data <- bike_count_per_quarter_from_2017
     }
+    else if (input$bike_count_borough_month == 1){
+      use_data <- subset(bike_count_per_quarter_from_2017_per_borough, borough=="Manhattan")
+    }
+    else if (input$bike_count_borough_month == 2){
+      use_data <- subset(bike_count_per_quarter_from_2017_per_borough, borough=="Brooklyn")
+    }
+    hchart(use_data, "column",
+           hcaes(x = Month, y = Total_count, group = Year)) %>%
+      hc_chart(zoomType = "x") %>%
+      hc_legend(align = "center", verticalAlign = "bottom",layout = "horizontal") %>%
+      hc_xAxis(title = list(text = "Trimester")) %>%
+      hc_yAxis(title = list(text = "Number or bikes"),
+               max = max(bike_count_per_quarter_from_2017$Total_count)) %>%
+      hc_title(text = "TITLE") %>%
+      hc_caption( align = 'center', style = list(color = "black"), text = '2021 had data only till August')  %>%
+      hc_exporting(enabled = TRUE) %>%
+      hc_colors(c("#D7DCEA", "#A1B3D7", "#6581BF", "#2F57AB", "#0B389D"))
     
-    else if (input$bike_count_borough_month == 1) {
-      hchart(subset(bike_count_per_quarter_from_2017_per_borough, borough=="Manhattan"), "column",
-             hcaes(x = Month, y = Total_count, group = Year)) %>%
-        hc_chart(zoomType = "x") %>%
-        hc_legend(align = "center", verticalAlign = "bottom",layout = "horizontal") %>%
-        hc_xAxis(title = list(text = "Trimester")) %>%
-        hc_yAxis(title = list(text = "Number or bikes"),
-                 max = max(bike_count_per_quarter_from_2017_per_borough$Total_count)) %>%
-        hc_title(text = "TITLE") %>%
-        hc_caption( align = 'center', style = list(color = "black"), text = '2021 had data only till August')  %>%
-        hc_exporting(enabled = TRUE) %>%
-        hc_colors(c("#D7DCEA", "#A1B3D7", "#6581BF", "#2F57AB", "#0B389D"))
-    }
-    
-    else if (input$bike_count_borough_month == 2) {
-      hchart(subset(bike_count_per_quarter_from_2017_per_borough, borough=="Brooklyn"), "column",
-             hcaes(x = Month, y = Total_count, group = Year)) %>%
-        hc_chart(zoomType = "x") %>%
-        hc_legend(align = "center", verticalAlign = "bottom",layout = "horizontal") %>%
-        hc_xAxis(title = list(text = "Trimester")) %>%
-        hc_yAxis(title = list(text = "Number or bikes"),
-                 max = max(bike_count_per_quarter_from_2017_per_borough$Total_count)) %>%
-        hc_title(text = "TITLE") %>%
-        hc_caption( align = 'center', style = list(color = "black"), text = '2021 had data only till August')  %>%
-        hc_exporting(enabled = TRUE) %>%
-        hc_colors(c("#D7DCEA", "#A1B3D7", "#6581BF", "#2F57AB", "#0B389D"))
-    }
   })
   
   ##############################################################################
@@ -216,21 +196,16 @@ shinyServer(function(input, output) {
   open_streets_dates_aggregate <- open_streets_dates
   
   open_streets_dates_aggregate$Aggregate <- 0
-  # for every row in DT
   counter <- 0
   for (i in 1:length(open_streets_dates_aggregate$StartDate)) {
     if(i==1) {
       counter <- counter + open_streets_dates_aggregate[i,2]
       open_streets_dates_aggregate[i,3] <- counter
     } else {
-      #D = C + BPreviousRow
       counter <- counter + open_streets_dates_aggregate[i,2]
       open_streets_dates_aggregate[i,3] <- counter
     }
   }
-  
-  #open_streets_dates_aggregate <- mutate(open_streets_dates_aggregate, Aggregate = lag(Aggregate) + Total_count)
-
   
   output$open_streets_dates <- renderHighchart({
     if (input$per_day & input$aggregated){
