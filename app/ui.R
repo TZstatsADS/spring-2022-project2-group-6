@@ -97,16 +97,40 @@ shinyUI(dashboardPage(
       
       tabItem(
         tabName = "Crimes",
-        fluidPage(
-
+        h4("Discussion about crimes and Covid"),
+        box(width = 400,
+            DT::dataTableOutput("mytable")
+        ),
+        box(width = 400,
+          h4("Number of arrests over time", align = 'center'),
+          br(),
+          
+          fluidPage(
+            fluidRow( 
+              column( width = 12,
+                      sidebarLayout(
+                        sidebarPanel(
+                          width = 2,
+                          radioButtons("crimes_arrests", "Distribution type:",
+                                       c("Arrests" = "Arrests",
+                                         "Crimes" = "Crimes")),
+                        ),
+                        mainPanel(
+                          highchartOutput("arrests_crimes_month_year")
+                        )
+                      )
+              ),
+              br(),
+              br(),
+              h5("Discuss plots", align = 'center', style="font-weight: bold")
+            )
+          )
         )
       ),
       
       tabItem(
         tabName = "Bikes",
         h4("Discussion about bikes and Covid"),
-        
-        #DT::dataTableOutput("mytable"),
         
         box(width = 400,
             h4("Number of bikes over time", align = 'center'),
@@ -137,7 +161,6 @@ shinyUI(dashboardPage(
                 br(),
                 h5("Discuss plots", align = 'center', style="font-weight: bold")
               )
-              #DT::dataTableOutput("mytable")
             )
         ),
         box(width = 400,

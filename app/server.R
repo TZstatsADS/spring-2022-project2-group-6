@@ -60,14 +60,86 @@ if (!require("dygraphs")) {
   library(dygraphs)
 }
 
+# import data
+bike_count <- read.csv('../output/Processed-bikecount-month.csv')
+bike_count_boroughs <- read.csv('../output/Processed-bikecount-month-boroughs.csv')
+open_streets_geo <- geojsonio::geojson_read("../data/Open Streets Locations.geojson", what ="sp")
+open_streets <- read.csv('../output/Processed_Open_Streets_Locations.csv')
+arrests <- read.csv('../output/NYPD_Arrests_Data_Recent.csv')
+shootings <- read.csv('../output/NYPD_Shooting_Data_Recent.csv')
+
 # Get Data
 shinyServer(function(input, output) {
   
-  # import data
-  bike_count = read.csv('../output/Processed-bikecount-month.csv')
-  bike_count_boroughs = read.csv('../output/Processed-bikecount-month-boroughs.csv')
-  open_streets_geo <- geojsonio::geojson_read("../data/Open Streets Locations.geojson", what ="sp")
-  open_streets <- read.csv('../output/Processed_Open_Streets_Locations.csv')
+  
+  ##############################################################################
+  # Crimes tab
+  ##############################################################################
+  
+  arrests = arrests %>% dplyr::rowwise() %>% dplyr::mutate(Month = strsplit(ARREST_DATE, split="/")[[1]][1])
+  arrests = arrests %>% dplyr::rowwise() %>% dplyr::mutate(Year = strsplit(ARREST_DATE, split="/")[[1]][3])
+  arrests = arrests %>% dplyr::rowwise() %>% dplyr::mutate(Year_Month = paste(Year, "/", Month, sep = ""))
+  
+  shootings = shootings %>% dplyr::rowwise() %>% dplyr::mutate(Month = strsplit(OCCUR_DATE, split="/")[[1]][1])
+  shootings = shootings %>% dplyr::rowwise() %>% dplyr::mutate(Year = strsplit(OCCUR_DATE, split="/")[[1]][3])
+  shootings = shootings %>% dplyr::rowwise() %>% dplyr::mutate(Year_Month = paste(Year, "/", Month, sep = ""))
+  
+  arrests_by_month_year <- data.frame(arrests$Year_Month) 
+  names(arrests_by_month_year)[names(arrests_by_month_year) == 'arrests.Year_Month'] <- 'Year_Month'
+  arrests_by_month_year$count <- 1
+  arrests_by_month_year <- arrests_by_month_year %>% 
+    group_by(Year_Month) %>% 
+    summarise(Total_count = sum(count))
+  arrests_by_month_year <- arrests_by_month_year[order(arrests_by_month_year$Year_Month),]
+  arrests_by_month_year = arrests_by_month_year %>% dplyr::rowwise() %>% dplyr::mutate(Month_Year = paste(strsplit(Year_Month, split="/")[[1]][2], "/", strsplit(Year_Month, split="/")[[1]][1], sep = ""))
+  
+  shootings_by_month_year <- data.frame(shootings$Year_Month) 
+  names(shootings_by_month_year)[names(shootings_by_month_year) == 'shootings.Year_Month'] <- 'Year_Month'
+  shootings_by_month_year$count <- 1
+  shootings_by_month_year <- shootings_by_month_year %>% 
+    group_by(Year_Month) %>% 
+    summarise(Total_count = sum(count))
+  shootings_by_month_year <- shootings_by_month_year[order(shootings_by_month_year$Year_Month),]
+  shootings_by_month_year = shootings_by_month_year %>% dplyr::rowwise() %>% dplyr::mutate(Month_Year = paste(strsplit(Year_Month, split="/")[[1]][2], "/", strsplit(Year_Month, split="/")[[1]][1], sep = ""))
+  
+  output$mytable = DT::renderDataTable({
+    shootings_by_month_year
+  })
+  
+  output$arrests_crimes_month_year <- renderHighchart({
+    if (input$crimes_arrests == 'Arrests'){
+      use_name <- 'Arrests'
+      use_data <- arrests_by_month_year$Total_count
+      use_color <- '#a07272'
+    }
+    if (input$crimes_arrests == 'Crimes'){
+      use_name <- 'Shootings'
+      use_data <- shootings_by_month_year$Total_count
+      use_color <- '#640404'
+    }
+  
+    highchart() %>%
+      hc_exporting(enabled = TRUE, formAttributes = list(target = "_blank")) %>%
+      hc_chart(type = 'line') %>%
+      hc_series( list(name = use_name, data =use_data, color=use_color, marker = list(symbol = 'circle') )
+      )%>%
+      hc_xAxis( categories = unique(arrests_by_month_year$Month_Year) ) %>%
+      hc_yAxis( title = list(text = "Number of Arrests")) %>%
+      hc_plotOptions(column = list(
+        dataLabels = list(enabled = F),
+        #stacking = "normal",
+        enableMouseTracking = T )
+      )%>%
+      hc_tooltip(table = TRUE,
+                 sort = TRUE,
+                 pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
+                                       " {series.name}: {point.y}"),
+                 headerFormat = '<span style="font-size: 13px">Year {point.key}</span>'
+      ) %>%
+      hc_title(text = "TITLE") %>%
+      hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
+      hc_caption( align = 'center', style = list(color = "black"), text = 'Caption')
+  })
   
   
   
@@ -268,11 +340,6 @@ shinyServer(function(input, output) {
         hc_caption( align = 'center', style = list(color = "black"), text = 'Caption')
     }
   })
-  
-  # output$mytable = DT::renderDataTable({
-  #   open_streets_dates_aggregate
-  # })
-  
   
   
 })
