@@ -133,7 +133,24 @@ shinyUI(dashboardPage(
                 h5("Discuss plots", align = 'center', style="font-weight: bold")
               )
             )
-        )
+        ),
+        box(width = 400,
+            h4("Open Streets", align = 'center'),
+            br(),
+            
+            fluidPage(
+              fluidRow( 
+                column( width = 6
+                ),
+                column( width = 6,
+                        h3("TITLE", align = 'center'),
+                        leafletOutput("open_streets_map", width="100%", height=800))
+                ),
+                br(),
+                br(),
+                h5("Discuss plots", align = 'center', style="font-weight: bold")
+              )
+          )
       ),
       
       tabItem(
@@ -162,6 +179,5 @@ shinyUI(dashboardPage(
       )
       
     )
-  )
-
+)
 ))

@@ -51,6 +51,10 @@ if (!require("highcharter")) {
   install.packages("highcharter")
   library(highcharter)
 }
+if (!require("geojsonio")) { 
+  install.packages("geojsonio")
+  library(geojsonio)
+}
 
 # Get Data
 shinyServer(function(input, output) {
@@ -58,6 +62,8 @@ shinyServer(function(input, output) {
   # import data
   bike_count = read.csv('../output/Processed-bikecount-month.csv')
   bike_count_boroughs = read.csv('../output/Processed-bikecount-month-boroughs.csv')
+  open_streets_geo <- geojsonio::geojson_read("../data/Open Streets Locations.geojson", what ="sp")
+  open_streets <- read.csv('../output/Processed_Open_Streets_Locations.csv')
   
   
   
@@ -179,6 +185,17 @@ shinyServer(function(input, output) {
         hc_exporting(enabled = TRUE) %>%
         hc_colors(c("#D7DCEA", "#A1B3D7", "#6581BF", "#2F57AB", "#0B389D"))
     }
+  })
+  
+  output$open_streets_map <- renderLeaflet({
+    leaflet() %>%
+      clearShapes() %>%
+      clearMarkers() %>%
+      addTiles() %>%
+      setView(lng=-73.985428, lat=40.748817, zoom = 12) %>%
+      addProviderTiles("CartoDB.Voyager") %>%
+      addPolylines(data=open_streets_geo, color="#0B389D", weight=3, opacity=1, label = lapply(open_streets$Label, htmltools::HTML), popup = open_streets$Hours, 
+                   highlightOptions = highlightOptions(bringToFront = TRUE, opacity = 1, weight = 5, sendToBack = FALSE, color = "white"))
   })
   
 })
