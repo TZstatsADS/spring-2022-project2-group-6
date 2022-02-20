@@ -82,15 +82,14 @@ shinyUI(dashboardPage(
       tabItem(
         tabName = "Covid",
         fluidPage(
-          # fluidRow(
-          #   width = 12,
-          #   h2("this is just a test"),
-          #   valueBoxOutput("total_case"),
-          #   valueBoxOutput("total_hospital"),
-          #   valueBoxOutput("total_death")),
-          # fluidRow(valueBoxOutput("day7_case"),
-          #          valueBoxOutput("day7_hospital"),
-          #          valueBoxOutput("day7_death"))
+          fluidRow(
+            valueBoxOutput("total_case"),
+            valueBoxOutput("total_hospital"),
+            valueBoxOutput("total_death")),
+          fluidRow(
+            valueBoxOutput("day7_case"),
+            valueBoxOutput("day7_hospital"),
+            valueBoxOutput("day7_death"))
         )
       ),
       
@@ -135,7 +134,7 @@ shinyUI(dashboardPage(
             )
           )
         ),
-        box(width = 400,
+        box(width = 400, 
           h4("Title", align = 'center'),
           br(),
           fluidRow( 
@@ -153,7 +152,8 @@ shinyUI(dashboardPage(
       
       tabItem(
         tabName = "Bikes",
-        h4("Discussion about bikes and Covid"),
+        img(src="bikes_header.png",width = "100%", height = "35%"),
+        h1("How has Covid affected bike usage?", align = 'center'),
         
         box(width = 400,
             h4("Number of bikes over time", align = 'center'),
@@ -257,7 +257,9 @@ shinyUI(dashboardPage(
                           )
                         )
                 )
-            )
+            ),
+            fluidRow(
+              valueBoxOutput("vbox1", width = 2))
           )
       )),
       

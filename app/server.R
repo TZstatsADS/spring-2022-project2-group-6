@@ -85,59 +85,60 @@ shinyServer(function(input, output) {
   # COVID Valuebox tab
   ##############################################################################
   
-  # output$total_case <- renderValueBox({
-  #   valueBox(
-  #     h4("Total Comfirmed Case"),
-  #     h3(sum(covid_trend_week$CASE_COUNT)),
-  #     icon = icon("head-side-virus"),
-  #     color = "aqua"
-  #   )
-  # })
+  output$total_case <- renderValueBox({
+    
+    valueBox(
+      h4("Total Comfirmed Case", style="font-size: 24px"),
+      h3(sum(covid_trend_week$CASE_COUNT)),
+      icon = icon("virus", lib = "font-awesome"),
+      color = "red"
+    )
+  })
   
-  # output$total_hospital <- renderValueBox({
-  #   valueBox(
-  #     h4("Total Hospitalization"),
-  #     h3(sum(covid_trend_week$HOSPITALIZED)),
-  #     icon = icon("head-side-virus", lib = "font-awesome"),
-  #     color = "#ecada9"
-  #   )
-  # })
+  output$total_hospital <- renderValueBox({
+    valueBox(
+      h4("Total Hospitalization", style="font-size: 24px"),
+      h3(sum(covid_trend_week$HOSPITALIZED)),
+      icon = icon("hospital", lib = "font-awesome"),
+      color = "teal"
+    )
+  })
   
-  # output$total_death <- renderValueBox({
-  #   valueBox(
-  #     h4("Total Death"),
-  #     h3(sum(covid_trend_week$DEATH_COUNT)),
-  #     icon = icon("head-side-virus", lib = "font-awesome"),
-  #     color = "#7d2428"
-  #   )
-  # })
-  # 
-  # output$day7_case <- renderValueBox({
-  #   valueBox(
-  #     h4("7-Day Average Comfirmed Case"),
-  #     h3(covid_trend_week$CASE_COUNT %>% tail(1)),
-  #     icon = icon("head-side-virus", lib = "font-awesome"),
-  #     color = "#b84247"
-  #   )
-  # })
-  # 
-  # output$day7_hospital <- renderValueBox({
-  #   valueBox(
-  #     h4("7-Day Average Hospitalization"),
-  #     h3(covid_trend_week$HOSPITALIZED %>% tail(1)),
-  #     icon = icon("head-side-virus", lib = "font-awesome"),
-  #     color = "#ecada9"
-  #   )
-  # })
-  # 
-  # output$day7_death <- renderValueBox({
-  #   valueBox(
-  #     h4("7-Day Average Death"),
-  #     h3(covid_trend_week$DEATH_COUNT %>% tail(1)),
-  #     icon = icon("head-side-virus", lib = "font-awesome"),
-  #     color = "#7d2428"
-  #   )
-  # })
+  output$total_death <- renderValueBox({
+    valueBox(
+      h4("Total Death", style="font-size: 24px"),
+      h3(sum(covid_trend_week$DEATH_COUNT)),
+      icon = icon("skull", lib = "font-awesome"),
+      color = "black"
+    )
+  })
+
+  output$day7_case <- renderValueBox({
+    valueBox(
+      h4("7-Day Average Comfirmed Case", style="font-size: 24px"),
+      h3(covid_trend_week$CASE_COUNT %>% tail(1)),
+      icon = icon("virus", lib = "font-awesome"),
+      color = "red"
+    )
+  })
+
+  output$day7_hospital <- renderValueBox({
+    valueBox(
+      h4("7-Day Average Hospitalization", style="font-size: 24px"),
+      h3(covid_trend_week$HOSPITALIZED %>% tail(1)),
+      icon = icon("hospital", lib = "font-awesome"),
+      color = "teal"
+    )
+  })
+
+  output$day7_death <- renderValueBox({
+    valueBox(
+      h4("7-Day Average Death", style="font-size: 24px"),
+      h3(covid_trend_week$DEATH_COUNT %>% tail(1)),
+      icon = icon("skull", lib = "font-awesome"),
+      color = "black"
+    )
+  })
   
   ##############################################################################
   # Crimes tab
@@ -713,6 +714,11 @@ shinyServer(function(input, output) {
                 title = "COVID MAP",
                 position = "topright")
     
+  })
+  
+  output$vbox1 <- renderValueBox({
+    counter <- 10
+    valueBox( "Coss", counter, color = "navy")
   })
     
     
