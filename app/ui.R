@@ -113,9 +113,11 @@ shinyUI(dashboardPage(
                       sidebarLayout(
                         sidebarPanel(
                           width = 2,
-                          radioButtons("crimes_arrests", "",
-                                       c("Arrests" = "Arrests",
-                                         "Crimes" = "Crimes"))
+                          div(style = "font-size: 12px;",
+                              radioButtons("crimes_arrests", "",
+                                           c("Arrests" = "Arrests",
+                                             "Shootings" = "Shootings"))
+                          )
                         ),
                         mainPanel(
                           highchartOutput("arrests_crimes_month_year")

@@ -129,7 +129,7 @@ shinyServer(function(input, output) {
       use_data <- arrests_by_month_year$Total_count
       use_color <- '#a07272'
     }
-    if (input$crimes_arrests == 'Crimes'){
+    if (input$crimes_arrests == 'Shootings'){
       use_name <- 'Shootings'
       use_data <- shootings_by_month_year$Total_count
       use_color <- '#640404'
@@ -197,8 +197,8 @@ shinyServer(function(input, output) {
       palette = "Reds", domain = zcta$case
     )
 
-    labels <- paste0("zip code: ", zcta$ZCTA5CE10,"<br/>",
-                     "case number: ", zcta$case) %>%
+    labels <- paste0("Zip code: ", zcta$ZCTA5CE10,"<br/>",
+                     "Number of shootings: ", zcta$case) %>%
       lapply(htmltools::HTML)
 
     zcta %>% ungroup() %>% leaflet %>%
@@ -221,8 +221,8 @@ shinyServer(function(input, output) {
       palette = "Reds", domain = zcta$case
     )
     
-    labels <- paste0("zip code: ", zcta$ZCTA5CE10,"<br/>",
-                     "case number: ", zcta$case) %>%
+    labels <- paste0("Zip code: ", zcta$ZCTA5CE10,"<br/>",
+                     "Number of shootings: ", zcta$case) %>%
       lapply(htmltools::HTML)
     
     zcta %>% ungroup() %>% leaflet %>%
