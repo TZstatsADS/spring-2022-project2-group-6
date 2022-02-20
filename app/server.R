@@ -73,12 +73,71 @@ arrests <- read.csv('../output/NYPD_Arrests_Data_Recent.csv')
 #shootings <- read.csv('../output/NYPD_Shooting_Data_Recent.csv')
 covid7day <- read.csv('../output/covid_last7day.csv')
 covid_total <- read.csv('../output/covid_total_case.csv')
+covid_trend_week <- read.csv("https://raw.githubusercontent.com/nychealth/coronavirus-data/master/trends/data-by-day.csv",
+                             stringsAsFactors = F)
 shootings_zipcodes <- read.csv('../output/Processed-shootings-zipcodes.csv')
 open_restaurants <- read.csv('../output/open_restaurants.csv')
 
 # Get Data
 shinyServer(function(input, output) {
   
+  ##############################################################################
+  # COVID Valuebox tab
+  ##############################################################################
+  
+  # output$total_case <- renderValueBox({
+  #   valueBox(
+  #     h4("Total Comfirmed Case"),
+  #     h3(sum(covid_trend_week$CASE_COUNT)),
+  #     icon = icon("head-side-virus"),
+  #     color = "aqua"
+  #   )
+  # })
+  
+  # output$total_hospital <- renderValueBox({
+  #   valueBox(
+  #     h4("Total Hospitalization"),
+  #     h3(sum(covid_trend_week$HOSPITALIZED)),
+  #     icon = icon("head-side-virus", lib = "font-awesome"),
+  #     color = "#ecada9"
+  #   )
+  # })
+  
+  # output$total_death <- renderValueBox({
+  #   valueBox(
+  #     h4("Total Death"),
+  #     h3(sum(covid_trend_week$DEATH_COUNT)),
+  #     icon = icon("head-side-virus", lib = "font-awesome"),
+  #     color = "#7d2428"
+  #   )
+  # })
+  # 
+  # output$day7_case <- renderValueBox({
+  #   valueBox(
+  #     h4("7-Day Average Comfirmed Case"),
+  #     h3(covid_trend_week$CASE_COUNT %>% tail(1)),
+  #     icon = icon("head-side-virus", lib = "font-awesome"),
+  #     color = "#b84247"
+  #   )
+  # })
+  # 
+  # output$day7_hospital <- renderValueBox({
+  #   valueBox(
+  #     h4("7-Day Average Hospitalization"),
+  #     h3(covid_trend_week$HOSPITALIZED %>% tail(1)),
+  #     icon = icon("head-side-virus", lib = "font-awesome"),
+  #     color = "#ecada9"
+  #   )
+  # })
+  # 
+  # output$day7_death <- renderValueBox({
+  #   valueBox(
+  #     h4("7-Day Average Death"),
+  #     h3(covid_trend_week$DEATH_COUNT %>% tail(1)),
+  #     icon = icon("head-side-virus", lib = "font-awesome"),
+  #     color = "#7d2428"
+  #   )
+  # })
   
   ##############################################################################
   # Crimes tab

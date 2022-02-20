@@ -82,7 +82,15 @@ shinyUI(dashboardPage(
       tabItem(
         tabName = "Covid",
         fluidPage(
-
+          # fluidRow(
+          #   width = 12,
+          #   h2("this is just a test"),
+          #   valueBoxOutput("total_case"),
+          #   valueBoxOutput("total_hospital"),
+          #   valueBoxOutput("total_death")),
+          # fluidRow(valueBoxOutput("day7_case"),
+          #          valueBoxOutput("day7_hospital"),
+          #          valueBoxOutput("day7_death"))
         )
       ),
       
