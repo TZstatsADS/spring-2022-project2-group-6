@@ -43,10 +43,6 @@ if (!require("highcharter")) {
   install.packages("highcharter")
   library(highcharter)
 }
-if (!require("dygraphs")) {
-  install.packages("dygraphs")
-  library(dygraphs)
-}
 
 shinyUI(dashboardPage(
   
@@ -100,9 +96,6 @@ shinyUI(dashboardPage(
       tabItem(
         tabName = "Crimes",
         h4("Discussion about crimes and Covid"),
-        # box(width = 400,
-        #     DT::dataTableOutput("mytable")
-        # ),
         box(width = 400,
           h4("Number of arrests over time", align = 'center'),
           br(),
@@ -218,8 +211,24 @@ shinyUI(dashboardPage(
       
       tabItem(
         tabName = "Restaurants",
-        fluidPage(
-
+        h4("Discussion about restaurants and Covid"),
+        
+        box(width = 400,
+            #DT::dataTableOutput("mytable")
+        ),
+        box(width = 400,
+            h4("Title", align = 'center'),
+            br(),
+            fluidRow( 
+              column( width = 6,
+                      h4("Open restaurants by borough", align = 'center'),
+                      highchartOutput("restaurants_borough")
+              ),
+              column( width = 6,
+                      h4("Open restaurants by additional seating type", align = 'center'),
+                      highchartOutput("restaurants_seatings") 
+              )
+            )
         )
       ),
       

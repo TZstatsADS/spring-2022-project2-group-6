@@ -55,10 +55,6 @@ if (!require("geojsonio")) {
   install.packages("geojsonio")
   library(geojsonio)
 }
-if (!require("dygraphs")) {
-  install.packages("dygraphs")
-  library(dygraphs)
-}
 if (!require("tigris")) { 
   install.packages("tigris")
   library(tigris)
@@ -78,6 +74,7 @@ arrests <- read.csv('../output/NYPD_Arrests_Data_Recent.csv')
 covid7day <- read.csv('../output/covid_last7day.csv')
 covid_total <- read.csv('../output/covid_total_case.csv')
 shootings_zipcodes <- read.csv('../output/Processed-shootings-zipcodes.csv')
+open_restaurants <- read.csv('../output/open_restaurants.csv')
 
 # Get Data
 shinyServer(function(input, output) {
@@ -311,7 +308,7 @@ shinyServer(function(input, output) {
                  headerFormat = '<span style="font-size: 13px">Year {point.key}</span>'
       ) %>%
       hc_title(text = "TITLE") %>%
-      hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 100, y = 000 ) %>%
+      hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
       hc_caption( align = 'center', style = list(color = "black"), text = '2021 had data only till August')
   })
   
@@ -330,7 +327,7 @@ shinyServer(function(input, output) {
       hc_chart(zoomType = "x") %>%
       hc_legend(align = "center", verticalAlign = "bottom",layout = "horizontal") %>%
       hc_xAxis(title = list(text = "Trimester")) %>%
-      hc_yAxis(title = list(text = "Number or bikes"),
+      hc_yAxis(title = list(text = "Number of bikes"),
                max = max(bike_count_per_quarter_from_2017$Total_count)) %>%
       hc_title(text = "TITLE") %>%
       hc_caption( align = 'center', style = list(color = "black"), text = '2021 had data only till August')  %>%
@@ -443,6 +440,70 @@ shinyServer(function(input, output) {
     }
   })
   
+  ##############################################################################
+  # Restaurants tab
+  ##############################################################################
+  
+  open_restaurants_borough <- open_restaurants
+  open_restaurants_borough$count <- 1
+  open_restaurants_borough <- open_restaurants_borough %>%
+    group_by(Borough) %>%
+    summarise(Total_count = sum(count))
+  
+  open_restaurants_seating_type <- open_restaurants
+  open_restaurants_seating_type$count <- 1
+  open_restaurants_seating_type <- open_restaurants_seating_type %>%
+    group_by(Borough, Seating.Interest..Sidewalk.Roadway.Both.) %>%
+    summarise(Total_count = sum(count))
+  
+  open_restaurants_seating_type <- rename(open_restaurants_seating_type, Seating=Seating.Interest..Sidewalk.Roadway.Both.)
+  
+  # output$mytable = DT::renderDataTable({
+  #   open_restaurants_seating_type
+  # })
+  
+  output$restaurants_borough <- renderHighchart({
+    hchart(open_restaurants_borough, "column",
+           hcaes(x = Borough, y = Total_count, color = c("#c1cbb4", "#789f52", "#2c5d37", "#d6db90", "#9cc43c"))) %>%
+      hc_chart(zoomType = "x") %>%
+      hc_legend(align = "center", verticalAlign = "bottom",layout = "horizontal") %>%
+      hc_xAxis(title = list(text = "Borough")) %>%
+      hc_yAxis(title = list(text = "Number of open restaurants"),
+               max = max(open_restaurants_borough$Total_count)) %>%
+      hc_title(text = "TITLE") %>%
+      hc_caption( align = 'center', style = list(color = "black"), text = 'caption')  %>%
+      hc_exporting(enabled = TRUE) %>%
+      hc_tooltip(table = TRUE,
+                 sort = TRUE,
+                 pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
+                                       "Open restaurants: {point.y}"),
+                 headerFormat = '<span style="font-size: 13px">Borough: {point.key}</span>'
+      )
+  })
+  
+  output$restaurants_seatings <- renderHighchart({
+    hchart(open_restaurants_seating_type, "column",
+           hcaes(x = Borough, y = Total_count, group = Seating),
+           stacking = "normal") %>%
+      hc_chart(zoomType = "x") %>%
+      hc_legend(align = "center", verticalAlign = "bottom",layout = "horizontal") %>%
+      hc_xAxis(title = list(text = "Borough")) %>%
+      hc_yAxis(title = list(text = "Number of open resturants"),
+               max = max(open_restaurants_seating_type$Total_count)) %>%
+      hc_title(text = "TITLE") %>%
+      hc_caption( align = 'center', style = list(color = "black"), text = '2021 had data only till August')  %>%
+      hc_exporting(enabled = TRUE) %>%
+      hc_colors(c("#c1cbb4", "#d6db90", "#789f52", "#2c5d37")) %>%
+      hc_tooltip(table = TRUE,
+                 sort = TRUE,
+                 pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
+                                       " {series.name}: {point.y}"),
+                 headerFormat = '<span style="font-size: 13px">{point.key}</span>'
+      )
+  })
+    
+    
+    
   ##############################################################################
   # COVID HEAT tab
   ##############################################################################
