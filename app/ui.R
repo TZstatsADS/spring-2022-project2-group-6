@@ -213,9 +213,9 @@ shinyUI(dashboardPage(
         tabName = "Restaurants",
         h4("Discussion about restaurants and Covid"),
         
-        box(width = 400,
-            #DT::dataTableOutput("mytable")
-        ),
+        # box(width = 400,
+        #     #DT::dataTableOutput("mytable")
+        # ),
         box(width = 400,
             h4("Title", align = 'center'),
             br(),
@@ -229,8 +229,29 @@ shinyUI(dashboardPage(
                       highchartOutput("restaurants_seatings") 
               )
             )
-        )
-      ),
+        ),
+        
+        box(width = 400,
+            h4("Open Restaurants Applications", align = 'center'),
+            br(),
+            
+            fluidPage(
+              fluidRow( 
+                column( width = 12,
+                        sidebarLayout(
+                          sidebarPanel(
+                            width = 2,
+                            checkboxInput("per_day_restaurants", label = "Per Day", value = TRUE),
+                            checkboxInput("aggregated_restaurants", label = "Aggregated", value = FALSE)
+                          ),
+                          mainPanel(
+                            highchartOutput("open_restaurants_dates")
+                          )
+                        )
+                )
+            )
+          )
+      )),
       
       tabItem(
         tabName = "Restaurants_map",

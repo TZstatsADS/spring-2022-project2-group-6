@@ -501,7 +501,160 @@ shinyServer(function(input, output) {
                  headerFormat = '<span style="font-size: 13px">{point.key}</span>'
       )
   })
+  
+  open_restaurants_dates <- data.frame(open_restaurants$Time_of_Submission) 
+  names(open_restaurants_dates)[names(open_restaurants_dates) == 'open_restaurants.Time_of_Submission'] <- 'Time_of_Submission'
+  
+  open_restaurants_dates = open_restaurants_dates %>% dplyr::rowwise() %>% dplyr::mutate(date = strsplit(Time_of_Submission, split=" ")[[1]][1])
+  open_restaurants_dates = open_restaurants_dates %>% dplyr::rowwise() %>% dplyr::mutate(Year = strsplit(date, split="/")[[1]][3])
+  open_restaurants_dates = open_restaurants_dates %>% dplyr::rowwise() %>% dplyr::mutate(Month = strsplit(date, split="/")[[1]][2])
+  open_restaurants_dates = open_restaurants_dates %>% dplyr::rowwise() %>% dplyr::mutate(Day = strsplit(date, split="/")[[1]][1])
+  open_restaurants_dates = open_restaurants_dates %>% dplyr::rowwise() %>% dplyr::mutate(Final_Date = paste(Year, "/", Month, "/", Day, sep = ""))
+  
+  open_restaurants_dates <- data.frame(open_restaurants_dates$Final_Date)
+  names(open_restaurants_dates)[names(open_restaurants_dates) == 'open_restaurants_dates.Final_Date'] <- 'Final_Date'
+  
+  open_restaurants_dates$count <- 1
+  open_restaurants_dates <- open_restaurants_dates %>%
+    group_by(Final_Date) %>%
+    summarise(Total_count = sum(count))
+  open_restaurants_dates <- open_restaurants_dates[order(open_restaurants_dates$Final_Date),]
+  open_restaurants_dates_aggregate <- open_restaurants_dates
+  
+  open_restaurants_dates_aggregate$Aggregate <- 0
+  counter <- 0
+  for (i in 1:length(open_restaurants_dates_aggregate$Final_Date)) {
+    if(i==1) {
+      counter <- counter + open_restaurants_dates_aggregate[i,2]
+      open_restaurants_dates_aggregate[i,3] <- counter
+    } else {
+      counter <- counter + open_restaurants_dates_aggregate[i,2]
+      open_restaurants_dates_aggregate[i,3] <- counter
+    }
+  }
+  
+  # output$mytable = DT::renderDataTable({
+  #   open_restaurants_dates_aggregate
+  # })
+  
+  
+  output$open_restaurants_dates <- renderHighchart({
+    if (input$per_day_restaurants & input$aggregated_restaurants){
+      highchart() %>%
+        hc_exporting(enabled = TRUE, formAttributes = list(target = "_blank")) %>%
+        hc_chart(type = 'line') %>%
+        hc_series( list(name = 'Per Day', data = open_restaurants_dates$Total_count, color='#789f52', marker = list(symbol = 'circle') ),
+                   list(name = 'Aggregate', data =open_restaurants_dates_aggregate$Aggregate, color = '#2c5d37', marker = list(symbol = 'circle') )
+        )%>%
+        hc_xAxis( categories = unique(open_restaurants_dates$Final_Date) ) %>%
+        hc_yAxis( title = list(text = "Number of Applications")) %>%
+        hc_plotOptions(column = list(
+          dataLabels = list(enabled = F),
+          #stacking = "normal",
+          enableMouseTracking = T )
+        )%>%
+        hc_tooltip(table = TRUE,
+                   sort = TRUE,
+                   pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
+                                         " {series.name}: {point.y}"),
+                   headerFormat = '<span style="font-size: 13px">Date {point.key}</span>'
+        ) %>%
+        hc_title(text = "Open Restaurant Applications") %>%
+        hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
+        hc_caption( align = 'center', style = list(color = "black"), text = 'Caption')
+    }
+    else if (!input$per_day_restaurants & !input$aggregated_restaurants) {
+    }
+    else{
+      if (input$per_day_restaurants){
+        use_name <- 'Per Day'
+        use_data <- open_restaurants_dates$Total_count
+        use_color <- '#789f52'
+      }
+      if (input$aggregated_restaurants){
+        use_name <- 'Aggregated'
+        use_data <- open_restaurants_dates_aggregate$Aggregate
+        use_color <- '#2c5d37'
+      }
+      highchart() %>%
+        hc_exporting(enabled = TRUE, formAttributes = list(target = "_blank")) %>%
+        hc_chart(type = 'line') %>%
+        hc_series( list(name = use_name, data = use_data, color=use_color, marker = list(symbol = 'circle') )
+        )%>%
+        hc_xAxis( categories = unique(open_restaurants_dates$Final_Date) ) %>%
+        hc_yAxis( title = list(text = "Number of Applications")) %>%
+        hc_plotOptions(column = list(
+          dataLabels = list(enabled = F),
+          #stacking = "normal",
+          enableMouseTracking = T )
+        )%>%
+        hc_tooltip(table = TRUE,
+                   sort = TRUE,
+                   pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
+                                         " {series.name}: {point.y}"),
+                   headerFormat = '<span style="font-size: 13px">Date {point.key}</span>'
+        ) %>%
+        hc_title(text = "Open Restaurant Applications") %>%
+        hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
+        hc_caption( align = 'center', style = list(color = "black"), text = 'Caption')
+    }
+  })
+  
+  
+  
+  
+  
+  
+  ##############################################################################
+  # COVID HEAT tab
+  ##############################################################################
+  
+  options(tigris_use_cache = TRUE)
+  
+  zcta <- zctas(starts_with = c(10, 11), year = 2010, state = "New York") %>%
+    mutate("ZCTA5CE10" = as.numeric(ZCTA5CE10))
+  
+  type <- reactive({
+    if(input$type == "7-Day"){
+      return(covid7day %>% select(modzcta, "case" = people_positive))
+    }
     
+    if(input$type == 'Total'){
+      return(covid_total %>% select(modzcta, "case" = COVID_CASE_COUNT))
+    }
+  })
+  
+  output$heatmap <- renderLeaflet({
+    zcta <- geo_join(zcta, type(), by_sp = "ZCTA5CE10",
+                     by_df = "modzcta", how = "left") %>% drop_na()
+    
+    if (input$type == "7-Day"){
+      pal <- colorNumeric(
+        palette = "Reds", domain = zcta$case
+      )
+    }
+    
+    if (input$type == "Total"){
+      pal <- colorNumeric(
+        palette = "Purples", domain = zcta$case
+      )
+    }
+    
+    labels <- paste0("zip code: ", zcta$ZCTA5CE10,"<br/>",
+                     "case number: ", zcta$case) %>%
+      lapply(htmltools::HTML)
+    
+    zcta %>% ungroup() %>% leaflet %>%
+      addProviderTiles("CartoDB") %>%
+      addPolygons(fillColor = ~pal(case), weight = 1, opacity = 1,
+                  color = "white", dashArray = "2", fillOpacity = 0.7,
+                  label = labels) %>%
+      addLegend(pal = pal,
+                values = ~case,
+                title = "COVID MAP",
+                position = "topright")
+    
+  })
     
     
   ##############################################################################
