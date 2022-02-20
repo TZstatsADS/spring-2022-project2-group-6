@@ -74,9 +74,10 @@ bike_count_boroughs <- read.csv('../output/Processed-bikecount-month-boroughs.cs
 open_streets_geo <- geojsonio::geojson_read("../data/Open Streets Locations.geojson", what ="sp")
 open_streets <- read.csv('../output/Processed_Open_Streets_Locations.csv')
 arrests <- read.csv('../output/NYPD_Arrests_Data_Recent.csv')
-shootings <- read.csv('../output/NYPD_Shooting_Data_Recent.csv')
+#shootings <- read.csv('../output/NYPD_Shooting_Data_Recent.csv')
 covid7day <- read.csv('../output/covid_last7day.csv')
 covid_total <- read.csv('../output/covid_total_case.csv')
+shootings_zipcodes <- read.csv('../output/Processed-shootings-zipcodes.csv')
 
 # Get Data
 shinyServer(function(input, output) {
@@ -90,9 +91,9 @@ shinyServer(function(input, output) {
   arrests = arrests %>% dplyr::rowwise() %>% dplyr::mutate(Year = strsplit(ARREST_DATE, split="/")[[1]][3])
   arrests = arrests %>% dplyr::rowwise() %>% dplyr::mutate(Year_Month = paste(Year, "/", Month, sep = ""))
   
-  shootings = shootings %>% dplyr::rowwise() %>% dplyr::mutate(Month = strsplit(OCCUR_DATE, split="/")[[1]][1])
-  shootings = shootings %>% dplyr::rowwise() %>% dplyr::mutate(Year = strsplit(OCCUR_DATE, split="/")[[1]][3])
-  shootings = shootings %>% dplyr::rowwise() %>% dplyr::mutate(Year_Month = paste(Year, "/", Month, sep = ""))
+  shootings_zipcodes = shootings_zipcodes %>% dplyr::rowwise() %>% dplyr::mutate(Month = strsplit(OCCUR_DATE, split="/")[[1]][1])
+  shootings_zipcodes = shootings_zipcodes %>% dplyr::rowwise() %>% dplyr::mutate(Year = strsplit(OCCUR_DATE, split="/")[[1]][3])
+  shootings_zipcodes = shootings_zipcodes %>% dplyr::rowwise() %>% dplyr::mutate(Year_Month = paste(Year, "/", Month, sep = ""))
   
   arrests_by_month_year <- data.frame(arrests$Year_Month) 
   names(arrests_by_month_year)[names(arrests_by_month_year) == 'arrests.Year_Month'] <- 'Year_Month'
@@ -103,8 +104,8 @@ shinyServer(function(input, output) {
   arrests_by_month_year <- arrests_by_month_year[order(arrests_by_month_year$Year_Month),]
   arrests_by_month_year = arrests_by_month_year %>% dplyr::rowwise() %>% dplyr::mutate(Month_Year = paste(strsplit(Year_Month, split="/")[[1]][2], "/", strsplit(Year_Month, split="/")[[1]][1], sep = ""))
   
-  shootings_by_month_year <- data.frame(shootings$Year_Month) 
-  names(shootings_by_month_year)[names(shootings_by_month_year) == 'shootings.Year_Month'] <- 'Year_Month'
+  shootings_by_month_year <- data.frame(shootings_zipcodes$Year_Month) 
+  names(shootings_by_month_year)[names(shootings_by_month_year) == 'shootings_zipcodes.Year_Month'] <- 'Year_Month'
   shootings_by_month_year$count <- 1
   shootings_by_month_year <- shootings_by_month_year %>% 
     group_by(Year_Month) %>% 
@@ -112,9 +113,15 @@ shinyServer(function(input, output) {
   shootings_by_month_year <- shootings_by_month_year[order(shootings_by_month_year$Year_Month),]
   shootings_by_month_year = shootings_by_month_year %>% dplyr::rowwise() %>% dplyr::mutate(Month_Year = paste(strsplit(Year_Month, split="/")[[1]][2], "/", strsplit(Year_Month, split="/")[[1]][1], sep = ""))
   
-  output$mytable = DT::renderDataTable({
-    shootings_by_month_year
-  })
+  shootings_by_zipcode_total <- data.frame(shootings_zipcodes$zipcode, shootings_zipcodes$Year, shootings_zipcodes$Month) 
+  names(shootings_by_zipcode_total)[names(shootings_by_zipcode_total) == 'shootings_zipcodes.zipcode'] <- 'zipcode'
+  names(shootings_by_zipcode_total)[names(shootings_by_zipcode_total) == 'shootings_zipcodes.Year'] <- 'Year'
+  names(shootings_by_zipcode_total)[names(shootings_by_zipcode_total) == 'shootings_zipcodes.Month'] <- 'Month'
+  shootings_by_zipcode_total$count <- 1
+  shootings_by_zipcode_total <- shootings_by_zipcode_total %>% 
+    group_by(zipcode, Year, Month) %>% 
+    summarise(Total_count = sum(count))
+  shootings_by_zipcode_total <- subset(shootings_by_zipcode_total, zipcode!="7020")
   
   output$arrests_crimes_month_year <- renderHighchart({
     if (input$crimes_arrests == 'Arrests'){
@@ -156,6 +163,78 @@ shinyServer(function(input, output) {
       hc_title(text = "TITLE") %>%
       hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
       hc_caption( align = 'center', style = list(color = "black"), text = 'Caption')
+  })
+  
+  
+  
+  
+  
+  
+  
+  options(tigris_use_cache = TRUE)
+
+  zcta <- zctas(starts_with = c(10, 11), year = 2010, state = "New York") %>%
+    mutate("ZCTA5CE10" = as.numeric(ZCTA5CE10))
+  
+  shootings_2021_3 <- subset(shootings_by_zipcode_total, Year=="2021")
+  shootings_2021_3 <- shootings_2021_3 %>%
+                    group_by(zipcode) %>%
+                    summarise(Total_c = sum(Total_count))
+  # output$mytable = DT::renderDataTable({
+  #   shootings_2021_3
+  # })
+  
+  shootings_2019_3 <- subset(shootings_by_zipcode_total, Year=="2019")
+  shootings_2019_3 <- shootings_2019_3 %>%
+    group_by(zipcode) %>%
+    summarise(Total_c = sum(Total_count))
+  
+  output$shootings_map_2021 <- renderLeaflet({
+    zcta <- geo_join(zcta, shootings_2021_3 %>% select(zipcode, "case" = Total_c), by_sp = "ZCTA5CE10",
+                     by_df = "zipcode", how = "left") %>% drop_na()
+  
+    pal <- colorNumeric(
+      palette = "Reds", domain = zcta$case
+    )
+
+    labels <- paste0("zip code: ", zcta$ZCTA5CE10,"<br/>",
+                     "case number: ", zcta$case) %>%
+      lapply(htmltools::HTML)
+
+    zcta %>% ungroup() %>% leaflet %>%
+      addProviderTiles("CartoDB") %>%
+      setView(lng=-73.985428, lat=40.748817, zoom = 10) %>%
+      addPolygons(fillColor = ~pal(case), weight = 1, opacity = 1,
+                  color = "white", dashArray = "2", fillOpacity = 0.7,
+                  label = labels) %>%
+      addLegend(pal = pal,
+                values = ~case,
+                title = "Shootings",
+                position = "topright")
+  })
+  
+  output$shootings_map_2019 <- renderLeaflet({
+    zcta <- geo_join(zcta, shootings_2019_3 %>% select(zipcode, "case" = Total_c), by_sp = "ZCTA5CE10",
+                     by_df = "zipcode", how = "left") %>% drop_na()
+    
+    pal <- colorNumeric(
+      palette = "Reds", domain = zcta$case
+    )
+    
+    labels <- paste0("zip code: ", zcta$ZCTA5CE10,"<br/>",
+                     "case number: ", zcta$case) %>%
+      lapply(htmltools::HTML)
+    
+    zcta %>% ungroup() %>% leaflet %>%
+      addProviderTiles("CartoDB") %>%
+      setView(lng=-73.985428, lat=40.748817, zoom = 10) %>%
+      addPolygons(fillColor = ~pal(case), weight = 1, opacity = 1,
+                  color = "white", dashArray = "2", fillOpacity = 0.7,
+                  label = labels) %>%
+      addLegend(pal = pal,
+                values = ~case,
+                title = "Shootings",
+                position = "topright")
   })
   
   

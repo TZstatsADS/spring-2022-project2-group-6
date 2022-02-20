@@ -100,31 +100,49 @@ shinyUI(dashboardPage(
       tabItem(
         tabName = "Crimes",
         h4("Discussion about crimes and Covid"),
-        box(width = 400,
-            DT::dataTableOutput("mytable")
-        ),
+        # box(width = 400,
+        #     DT::dataTableOutput("mytable")
+        # ),
         box(width = 400,
           h4("Number of arrests over time", align = 'center'),
           br(),
           
           fluidPage(
             fluidRow( 
-              column( width = 12,
+              column( width = 7,
                       sidebarLayout(
                         sidebarPanel(
                           width = 2,
-                          radioButtons("crimes_arrests", "Distribution type:",
+                          radioButtons("crimes_arrests", "",
                                        c("Arrests" = "Arrests",
-                                         "Crimes" = "Crimes")),
+                                         "Crimes" = "Crimes"))
                         ),
                         mainPanel(
                           highchartOutput("arrests_crimes_month_year")
                         )
                       )
               ),
-              br(),
-              br(),
+              column( width = 5,
+                      img(src="Crimes_news.png",width = "100%", height = "35%")
+              ),
+              br()
+            ),
+            fluidRow( 
               h5("Discuss plots", align = 'center', style="font-weight: bold")
+            )
+          )
+        ),
+        box(width = 400,
+          h4("Title", align = 'center'),
+          br(),
+          fluidRow( 
+            column( width = 6,
+                    h4("Shootings Sep-Dec 2019", align = 'center'),
+                    leafletOutput("shootings_map_2019") 
+            ),
+            column( width = 6,
+                    h4("Shootings Sep-Dec 2021", align = 'center'),
+                    leafletOutput("shootings_map_2021") 
             )
           )
         )
