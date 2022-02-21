@@ -363,7 +363,7 @@ shinyUI(dashboardPage(
                            
                          ),
                          
-                         mainPanel(leafletOutput("restaurant_map", width="150%", height=500)
+                         mainPanel(leafletOutput("restaurant_map", width="150%", height=800)
                          )
                          #mainPanel(fluidRow( column(12, leafletOutput( "mapPlot1" ) ) ))
           )
