@@ -59,9 +59,7 @@ shinyUI(dashboardPage(
                menuSubItem("How Covid has affected crimes", tabName = "Crimes", icon = icon("skull-crossbones")),
                menuSubItem("How Covid has affected bike usage", tabName = "Bikes", icon = icon("biking")),
                menuSubItem("How Covid has affected restaurants", tabName = "Restaurants", icon = icon("utensils"))),
-      menuItem("Restaurants Map", tabName = "Restaurants_map", icon = icon("map"),
-               startExpanded = TRUE,
-               menuSubItem("COVID 7-Day Map", tabName = "covid_heat", icon = icon("virus"))),
+      menuItem("Restaurants Map", tabName = "Restaurants_map", icon = icon("map")),
       menuItem("About", tabName="About", icon = icon("info"))
     )
   ),
@@ -81,6 +79,7 @@ shinyUI(dashboardPage(
       
       tabItem(
         tabName = "Covid",
+        # Six Boxes
         fluidPage(
           fluidRow(
             valueBoxOutput("total_case"),
@@ -90,7 +89,73 @@ shinyUI(dashboardPage(
             valueBoxOutput("day7_case"),
             valueBoxOutput("day7_hospital"),
             valueBoxOutput("day7_death"))
+        ),
+        # # 7 day trend
+        # box(width = 400,
+        #     h4("Latest News on COVID", align = 'center', style="font-weight: bold"),
+        #     br(),
+        #     
+        #     fluidPage(
+        #       fluidRow( 
+        #         column(width = 5, highchartOutput("covid_trend_7day")),
+        #         column( width = 5,
+        #                 img(src="Crimes_news.png",width = "100%", height = "35%")),
+        #       )
+        #     )),
+        # Overall view
+        # box(width = 400,
+        #     h4("Covid Overall View", align = 'center', style="font-weight: bold"),
+        #     br(),
+        #     
+        #     fluidPage(
+        #       # Covid Overall Trend line Row
+        #       fluidRow(
+        #         column( width = 12,
+        #                 sidebarLayout(
+        #                   sidebarPanel(width = 2,
+        #                                checkboxInput("cases", label = "Cases", value = TRUE),
+        #                                checkboxInput("hospitcal", label = "Hospitalization", value = FALSE),
+        #                                checkboxInput("death", label = "Death", value = FALSE)
+        #                   ),
+        #                   mainPanel(highchartOutput("covid_trend_total"))
+        #                 )
+        #         )
+        #       ),
+        #       # Vacc info Row
+        #       fluidRow(
+        #         # Get Vaccinated!!!
+        #         column(width = 5,
+        #                img(src="Crimes_news.png",width = "100%", height = "35%")),
+        #         # Vac bar chart
+        #         column(width = 5,highchartOutput("covid_vacc_bar"))
+        #       )
+        #       
+        #     ),
+            # Pie charts
+            # fluidRow(
+            #   # put up three pie chart
+            # )
+            
+        # ),
+        
+        # Heatmap
+        fluidPage(
+          sidebarLayout(
+            sidebarPanel(
+              selectInput("type", "Type", 
+                          choices = c("7-Day", "Total"))),
+            mainPanel(leafletOutput("heatmap"))
+          )
         )
+        
+      ),
+      
+      tabItem(
+        tabName = "Effects",
+        fluidPage(
+          
+        )
+        
       ),
       
       tabItem(
@@ -267,18 +332,6 @@ shinyUI(dashboardPage(
         tabName = "Restaurants_map",
         fluidPage(
           
-        )
-      ),
-      
-      tabItem(
-        tabName = "covid_heat",
-        fluidPage(
-          sidebarLayout(
-            sidebarPanel(
-              selectInput("type", "Type", 
-                          choices = c("7-Day", "Total"))),
-            mainPanel(leafletOutput("heatmap"))
-          )
         )
       ),
 

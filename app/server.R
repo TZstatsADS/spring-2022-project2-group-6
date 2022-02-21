@@ -82,6 +82,21 @@ open_restaurants <- read.csv('../output/open_restaurants.csv')
 shinyServer(function(input, output) {
   
   ##############################################################################
+  # COVID tab - Graphs
+  ##############################################################################
+  
+  # output$covid_trend_total
+  # 
+  # See "output$bike_count_year" code
+  # 
+  # output$covid_trend_7day <- renderHighchart({
+  #   highchart() %>% 
+  #     
+  # })
+  # 
+  # output$covid_vacc_bar
+  
+  ##############################################################################
   # COVID Valuebox tab
   ##############################################################################
   
