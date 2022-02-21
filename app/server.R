@@ -63,6 +63,16 @@ if (!require("htmltools")) {
   install.packages("htmltools")
   library(htmltools)
 }
+if (!require("padr")) {
+  install.packages("padr")
+  library(padr)
+}
+if (!require("forecast")) {
+  install.packages("forecast")
+  library(forecast)
+}
+if(!require(fontawesome)) devtools::install_github("rstudio/fontawesome")
+
 
 # import data
 bike_count <- read.csv('../output/Processed-bikecount-month.csv')
@@ -77,6 +87,85 @@ covid_trend_week <- read.csv("https://raw.githubusercontent.com/nychealth/corona
                              stringsAsFactors = F)
 shootings_zipcodes <- read.csv('../output/Processed-shootings-zipcodes.csv')
 open_restaurants <- read.csv('../output/open_restaurants.csv')
+
+covid_data <- read.csv("../data/last7days-by-modzcta.csv")
+crime_data <- read.csv('../output/NYPD_Shooting_Data_Recent.csv')
+app_data <- read.csv("../output/Open_Restaurants.csv" )
+
+##############################################################################
+# Algorithm for Recommendation Rating System
+##############################################################################
+#Crime Evaluation (Shooting cases: exponential smoothing)
+rating2_group <- unique(crime_data$BORO)
+crime_data$Date <- as.Date(crime_data$OCCUR_DATE, format="%m/%d/%Y")
+crime_frequency <- crime_data %>% group_by(BORO) %>% count(Date)
+crime_paddate <- pad(crime_frequency, interval = "day",start_val = min(crime_data$Date),
+                     end_val = max(crime_data$Date)) %>% fill_by_value(n)
+
+rating2_pre <- rep(0,length(rating2_group))
+i=1
+for (groupname in unique(crime_paddate$BORO)){
+  crime_smooth <- ses(crime_paddate %>% filter(BORO == groupname) %>% ungroup()%>% select('n'), h=1, alpha=0.8, initial="simple")
+  rating2_pre[i] <- crime_smooth$mean[1]
+  i <- i+1
+}
+rating2_min <- min(rating2_pre)
+
+#Covid (Recent 7 days average percentage case)
+rating3_group<- covid_data$label
+rating3_pre <- covid_data$percentpositivity_7day
+rating3_quantile <- quantile(rating3_pre, probs = c(.25, .75))
+rating3_min <- min(rating3_pre)
+
+#Rating Start
+len <- dim(app_data)[1]
+rating1 <- rep(0,len)
+rating2 <- rep(0,len)
+rating3 <- rep(0,len)
+for (i in 1:len){
+  #Five points for the open area
+  data <- app_data[i,]
+  if (data$SkippedReason=='No Seating'){
+    rate <- 1
+  }else if (data$SeatingChoice=='both') {
+    rate <- 5
+  }else if(data$SeatingChoice=='roadway'){
+    rate <- 4
+  }else if(data$SeatingChoice=='sidewalk'){
+    rate <- 3
+  }else if(data$SeatingChoice=='openstreets'){
+    rate <- 2
+  }
+  
+  if (data$IsRoadwayCompliant=='Non-Compliant'){
+    rate <- rate-0.5
+  }
+  rating1[i] <- rate
+  
+  #Two points for safety issue
+  boro <- toupper(data$Borough)
+  rating2[i] <- 2*(rating2_min/rating2_pre[rating2_group==boro])
+  
+  #Three points for covid status 
+  zipcode <- data$Postcode_x
+  positive <- rating3_pre[grepl(zipcode,rating3_group)]
+  try(
+    if (positive<=rating3_quantile[1]){
+      rating3[i] <- 3
+    } else if (positive>rating3_quantile[2]) {
+      rating3[i] <- 1
+    } else {
+      rating3[i] <- 2
+    },
+    silent = TRUE
+  )
+}
+
+app_data$rating <- round(rating1+rating2+rating3, digits = 1)
+##############################################################################
+# End of the Rating
+##############################################################################
+
 
 # Get Data
 shinyServer(function(input, output) {
@@ -787,6 +876,83 @@ shinyServer(function(input, output) {
                 title = "COVID MAP",
                 position = "topright")
     
+  })
+  
+  ##############################################################################
+  # Restaurant Map Tab
+  ##############################################################################
+  observeEvent( input$range, {
+    
+    output$restaurant_map<-renderLeaflet({  
+      app_data.sub <- app_data[ (app_data$rating>=input$range[1])&(app_data$rating<=input$range[2]),]
+      app_data.sub1 <- app_data.sub[ app_data.sub$Postcode_x == input$zip,  ]
+      
+      if (input$zip != "all"){
+        if (input$cluster1 == "ENABLE")
+        {
+          map1 <- leaflet(app_data.sub1) %>%
+            addProviderTiles("CartoDB.Voyager") %>%
+            setView(-74.00, 40.71, zoom = 11)%>%
+            addAwesomeMarkers(lng = ~Longitude, lat = ~Latitude, 
+                              icon = awesomeIcons(markerColor= "purple",
+                                                  text = fa("utensils")), 
+                              popup = paste(
+                                "<b>Restaurant Name:</b>", app_data.sub1$Restaurant.Name,"<br>",
+                                "<b>Address:</b>", app_data.sub1$Business.Address, 
+                                app_data.sub1$Postcode_x,  "<br>",
+                                "<b>Seating Choice:</b>", app_data.sub$SeatingChoice, "<br>",
+                                "<b> Recommendation Rate:</b>", app_data.sub1$rating , "<br>"
+                              ),
+                              clusterOptions = markerClusterOptions())
+        }
+        else
+        {map1 <- leaflet(app_data.sub1) %>%
+          addProviderTiles("CartoDB.Voyager") %>%
+          setView(-74.00, 40.71, zoom = 11)%>%
+          addAwesomeMarkers(lng = ~Longitude, lat = ~Latitude, 
+                            icon = awesomeIcons(markerColor= "purple",
+                                                text = fa("utensils")), 
+                            popup = paste(
+                              "<b>Restaurant Name:</b>", app_data.sub1$Restaurant.Name, "<br>", 
+                              "<b>Address:</b>", app_data.sub1$Business.Address,
+                              app_data.sub1$Postcode_x,  "<br>",
+                              "<b>Seating Choice:</b>", app_data.sub$SeatingChoice, "<br>",
+                              "<b>Recommendation Rate:</b>", app_data.sub1$rating , "<br>"))
+        }
+      }
+      else if(input$zip == "all"){
+        if (input$cluster1 == "ENABLE")
+        {
+          map1 <- leaflet(app_data.sub) %>%
+            addProviderTiles("CartoDB.Voyager") %>%
+            setView(-74.00, 40.71, zoom = 11)%>%
+            addAwesomeMarkers(lng = ~Longitude, lat = ~Latitude, 
+                              icon = awesomeIcons(markerColor= "purple",
+                                                  text = fa("utensils")), 
+                              popup = paste(
+                                "<b>Restaurant Name:</b>", app_data.sub$Restaurant.Name, "<br>",
+                                "<b>Address:</b>", app_data.sub$Business.Address,
+                                app_data.sub$Postcode_x,  "<br>",
+                                "<b>Seating Choice:</b>", app_data.sub$SeatingChoice, "<br>",
+                                "<b>Recommendation Rate:</b>", app_data.sub$rating , "<br>"),
+                              clusterOptions = markerClusterOptions())
+        }
+        else
+        {map1 <- leaflet(app_data.sub) %>%
+          addProviderTiles("CartoDB.Voyager") %>%
+          setView(-74.00, 40.71, zoom = 11)%>%
+          addAwesomeMarkers(lng = ~Longitude, lat = ~Latitude, 
+                            icon = awesomeIcons(markerColor= "purple",
+                                                text = fa("utensils")), 
+                            popup = paste(
+                              "<b>Restaurant Name:</b>", app_data.sub$Restaurant.Name,"<br>",
+                              "<b>Address:</b>", app_data.sub$Business.Address, 
+                              app_data.sub$Postcode_x,  "<br>",
+                              "<b>Seating Choice:</b>", app_data.sub$SeatingChoice, "<br>",
+                              "<b>Recommendation Rate:</b>", app_data.sub$rating , "<br>"))
+        }
+      }
+    })
   })
   
   

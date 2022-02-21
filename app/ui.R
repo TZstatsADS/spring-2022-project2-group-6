@@ -44,6 +44,10 @@ if (!require("highcharter")) {
   library(highcharter)
 }
 
+#Data Loading
+app_data <- read.csv('../output/open_restaurants.csv')
+zipcode <- sort(unique(app_data$Postcode_x))
+
 shinyUI(dashboardPage(
   
   skin = "purple",
@@ -331,7 +335,38 @@ shinyUI(dashboardPage(
       tabItem(
         tabName = "Restaurants_map",
         fluidPage(
-          
+          sidebarLayout( position = "right",
+                         
+                         sidebarPanel(
+                           
+                           h2( helpText("Restaurants Map") ),
+                           
+                           
+                           selectInput( inputId="zip", 
+                                        label="Select Zipcode", 
+                                        choices= c("all", zipcode),
+                                        selected="all",
+                           ),
+                           
+                           selectInput( inputId="cluster1", 
+                                        label="Cluster Option", 
+                                        choices= c("ENABLE","DISABLE"),
+                                        selected="yes"
+                           ),
+                           
+                           sliderInput("range",
+                                       "Rating:",
+                                       min = 0,
+                                       max = 10,
+                                       value = c(5,8)
+                           )
+                           
+                         ),
+                         
+                         mainPanel(leafletOutput("restaurant_map", width="150%", height=500)
+                         )
+                         #mainPanel(fluidRow( column(12, leafletOutput( "mapPlot1" ) ) ))
+          )
         )
       ),
 
