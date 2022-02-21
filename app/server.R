@@ -900,7 +900,7 @@ shinyServer(function(input, output) {
                                 "<b>Restaurant Name:</b>", app_data.sub1$Restaurant.Name,"<br>",
                                 "<b>Address:</b>", app_data.sub1$Business.Address, 
                                 app_data.sub1$Postcode_x,  "<br>",
-                                "<b>Seating Choice:</b>", app_data.sub$SeatingChoice, "<br>",
+                                "<b>Seating Choice:</b>", app_data.sub1$SeatingChoice, "<br>",
                                 "<b> Recommendation Rate:</b>", app_data.sub1$rating , "<br>"
                               ),
                               clusterOptions = markerClusterOptions())
