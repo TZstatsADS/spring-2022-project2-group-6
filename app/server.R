@@ -181,102 +181,39 @@ shinyServer(function(input, output) {
   # COVID tab - Graphs
   ##############################################################################
   
- output$covid_trend_total <- renderHighchart({
-   c <- list(name = "Cases", data = covid_trend_week$CASE_COUNT,
-             color='#6581BF', marker = list(symbol = 'circle'))
-   h <- list(name = "Hospitalization", data = covid_trend_week$HOSPITALIZED_COUNT,
-             color='#02216f', marker = list(symbol = 'circle'))
-   d <- list(name = "Death", data = covid_trend_week$DEATH_COUNT,
-             color='#6581BF', marker = list(symbol = 'circle'))
-if (!input$cases & !input$hospital & !input$death){
-} else{
+  output$covid_trend_total <- renderHighchart({
+    c <- list(name = "Cases", data = covid_trend_week$CASE_COUNT,
+              color='#6581BF', marker = list(symbol = 'circle'))
+    h <- list(name = "Hospitalization", data = covid_trend_week$HOSPITALIZED_COUNT,
+              color='#02216f', marker = list(symbol = 'circle'))
+    d <- list(name = "Death", data = covid_trend_week$DEATH_COUNT,
+              color='#6581BF', marker = list(symbol = 'circle'))
+    if (!input$cases & !input$hospital & !input$death){
+    } else{
+      
+      if(input$cases){
+        if(input$hospital){
+          if(input$death){hc_chart(hc_series(highchart(),c, h, d), type = "line")}
+          else {hc_chart(hc_series(highchart(),c, h), type = "line")}
+        } else {hc_chart(hc_series(highchart(),c), type = "line")}
+      } else if(input$hospital) {
+        if(input$death){hc_chart(hc_series(highchart(),h, d), type = "line")}
+        else {hc_chart(hc_series(highchart(), h), type = "line")}
+      } else if (input$death) {hc_chart(hc_series(highchart(),d), type = "line")} %>% 
+        hc_exporting(enabled = T, formAttributes = list(target = "_blank")) %>% 
+        hc_xAxis(categories = unique(covid_trend_week$date_of_interest)) %>%
+        hc_yAxis(title = list(text = "Count")) %>%
+        hc_plotOptions(column = list(dataLabels = list(enabled = F), enableMouseTracking = T))%>%
+        hc_tooltip(table = TRUE, sort = TRUE,
+                   # pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
+                   #                       " {series.name}: {point.y}"),
+                   # headerFormat = '<span style="font-size: 13px">Date {point.key}</span>'
+        ) %>%
+        hc_title(text = "COVID Total Trend") %>%
+        hc_legend(layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
+        hc_caption(align = 'center', style = list(color = "black"), text = 'To be changed')}
+  })
   
-  if(input$cases){
-    if(input$hospital){
-      if(input$death){hc_chart(hc_series(highchart(),c, h, d), type = "line")}
-      else {hc_chart(hc_series(highchart(),c, h), type = "line")}
-    } else {hc_chart(hc_series(highchart(),c), type = "line")}
-  } else if(input$hospital) {
-    if(input$death){hc_chart(hc_series(highchart(),h, d), type = "line")}
-    else {hc_chart(hc_series(highchart(), h), type = "line")}
-  } else {hc_chart(hc_series(highchart(),d), type = "line")} %>% 
-    hc_exporting(enabled = T, formAttributes = list(target = "_blank")) %>% 
-    hc_xAxis(categories = unique(covid_trend_week$date_of_interest)) %>%
-    hc_yAxis(title = list(text = "Count")) %>%
-    hc_plotOptions(column = list(dataLabels = list(enabled = F), enableMouseTracking = T))%>%
-    hc_tooltip(table = TRUE, sort = TRUE,
-               # pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
-               #                       " {series.name}: {point.y}"),
-               # headerFormat = '<span style="font-size: 13px">Date {point.key}</span>'
-    ) %>%
-    hc_title(text = "COVID Total Trend") %>%
-    hc_legend(layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
-    hc_caption(align = 'center', style = list(color = "black"), text = 'To be changed')}
- })
-  
-  # output$open_streets_dates <- renderHighchart({
-  #   if (input$per_day & input$aggregated){
-  #     highchart() %>%
-  #       hc_exporting(enabled = TRUE, formAttributes = list(target = "_blank")) %>%
-  #       hc_chart(type = 'line') %>%
-  #       hc_series( list(name = 'Per Day', data = open_streets_dates$Total_count, color='#6581BF', marker = list(symbol = 'circle') ),
-  #                  list(name = 'Aggregate', data =open_streets_dates_aggregate$Aggregate, color = '#02216f', marker = list(symbol = 'circle') )
-  #       )%>%
-        # hc_xAxis( categories = unique(open_streets_dates$StartDate) ) %>%
-        # hc_yAxis( title = list(text = "Number of approvals")) %>%
-        # hc_plotOptions(column = list(
-        #   dataLabels = list(enabled = F),
-        #   #stacking = "normal",
-        #   enableMouseTracking = T )
-        # )%>%
-        # hc_tooltip(table = TRUE,
-        #            sort = TRUE,
-        #            pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
-        #                                  " {series.name}: {point.y}"),
-        #            headerFormat = '<span style="font-size: 13px">Date {point.key}</span>'
-        # ) %>%
-        # hc_title(text = "Open Streets Approvals") %>%
-        # hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
-        # hc_caption( align = 'center', style = list(color = "black"), text = 'Caption')
-  #   }
-  #   else if (!input$per_day & !input$aggregated) {
-  #   }
-  #   else{
-  #     if (input$per_day){
-  #       use_name <- 'Per Day'
-  #       use_data <- open_streets_dates$Total_count
-  #       use_color <- '#6581BF'
-  #     }
-  #     if (input$aggregated){
-  #       use_name <- 'Aggregated'
-  #       use_data <- open_streets_dates_aggregate$Aggregate
-  #       use_color <- '#02216f'
-  #     }
-  #     highchart() %>%
-  #       hc_exporting(enabled = TRUE, formAttributes = list(target = "_blank")) %>%
-  #       hc_chart(type = 'line') %>%
-  #       hc_series( list(name = use_name, data = use_data, color=use_color, marker = list(symbol = 'circle') )
-  #       )%>%
-  #       hc_xAxis( categories = unique(open_streets_dates$StartDate) ) %>%
-  #       hc_yAxis( title = list(text = "Number of approvals")) %>%
-  #       hc_plotOptions(column = list(
-  #         dataLabels = list(enabled = F),
-  #         #stacking = "normal",
-  #         enableMouseTracking = T ) 
-  #       )%>%
-  #       hc_tooltip(table = TRUE,
-  #                  sort = TRUE,
-  #                  pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
-  #                                        " {series.name}: {point.y}"),
-  #                  headerFormat = '<span style="font-size: 13px">Date {point.key}</span>'
-  #       ) %>%
-  #       hc_title(text = "Open Streets Approvals") %>%
-  #       hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
-  #       hc_caption( align = 'center', style = list(color = "black"), text = 'Caption')
-  #   }
-  # })
-  
-
   output$covid_trend_7day <- renderHighchart({
     highchart() %>%
       hc_exporting(enabled = T, formAttributes = list(target = "_blank")) %>% 
@@ -287,21 +224,21 @@ if (!input$cases & !input$hospital & !input$death){
                      color = '#02216f', marker = list(symbol = 'circle')),
                 list(name = "Death", data = covid_trend_week$DEATH_COUNT %>% tail(7),
                      color = '#6581BF', marker = list(symbol = 'circle'))) %>% 
-      hc_xAxis(categories = unique(covid_trend_week$date_of_interest)) %>% 
+      hc_xAxis(categories = unique(covid_trend_week$date_of_interest %>% tail(7))) %>% 
       hc_yAxis(title = list(text = "Count")) %>% 
       hc_plotOptions(column = list(dataLabels = list(enabled = F), enableMouseTracking = T)) %>% 
       hc_tooltip(table = T, sort = T
                  # pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
                  #                       " {series.name}: {point.y}"),
                  # headerFormat = '<span style="font-size: 13px">Year {point.key}</span>'
-                 ) %>%
+      ) %>%
       hc_title(text = "COVID 7-Day Trend") %>% 
       hc_legend(layout = "vertical", align = "left", verticalAlign = "top", 
                 floating = T, x = 50, y = 40) %>% 
       hc_caption(align = 'center', style = list(color = "black"), text = 'Past Week')
   })
-
-
+  
+  
   output$covid_vax_bar <- renderHighchart({
     covid_vax %>% select(measure, vax_count, unvax_count) %>% 
       pivot_longer(cols = c(vax_count, unvax_count), names_to = "vax_type", values_to = "count") %>% 
@@ -320,20 +257,17 @@ if (!input$cases & !input$hospital & !input$death){
                  # pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
                  #                       " {series.name}: {point.y}"),
                  # headerFormat = '<span style="font-size: 13px">Trimester {point.key}</span>'
-                 )
+      )
   })
   
   output$pie_age <- renderPlotly({
     colors=RColorBrewer::brewer.pal(nrow(by_age),'Blues')
     
-    fig <- plot_ly(by_age, labels = c('0-4_years', '5-12_years', '13-17_years', '18-24_years',
-                                      '25-34_years', '35-44_years', '45-44_years', '55-64_years',
-                                      '65-74_years', 'over_75_years'),
+    fig <- plot_ly(by_age, labels = ~AGE_GROUP,
                    values = ~(CONFIRMED_CASE_COUNT/sum(CONFIRMED_CASE_COUNT)), type = 'pie',
                    marker = list(colors = colors))
     fig %>% layout(title = 'Percent of people test positive by age',
-                   xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-                   yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+                   legend = list(x = -1, y = 1))
     
   })
   
@@ -347,8 +281,7 @@ if (!input$cases & !input$hospital & !input$death){
                    values = ~(CONFIRMED_CASE_COUNT/sum(CONFIRMED_CASE_COUNT)), type = 'pie',
                    marker = list(colors = colors))
     fig %>% layout(title = 'Percent of people test positive by poverty',
-                   xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-                   yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+                   legend = list(x = -1, y = 1))
     
   })
   
@@ -362,8 +295,7 @@ if (!input$cases & !input$hospital & !input$death){
                    values = ~(CONFIRMED_CASE_COUNT/sum(CONFIRMED_CASE_COUNT)), type = 'pie',
                    marker = list(colors = colors))
     fig %>% layout(title = 'percent of people test positive by race',
-                   xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-                   yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+                   legend = list(x = -1, y = 1))
     
   })
   

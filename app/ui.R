@@ -50,7 +50,7 @@ zipcode <- sort(unique(app_data$Postcode_x))
 
 shinyUI(dashboardPage(
   
-  skin = "purple",
+  skin = "black",
   
   dashboardHeader(title ="Dashboard Header", titleWidth = 300),
   dashboardSidebar(
@@ -72,6 +72,7 @@ shinyUI(dashboardPage(
       tabItem(
         tabName = "Home",
         fluidPage(
+          setBackgroundImage(src = "TimeSquare_adj.jpg", shinydashboard = T),
           h1("Project Title",align = "center", style="font-weight: bold"),
           br(),
           
