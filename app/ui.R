@@ -96,25 +96,26 @@ shinyUI(dashboardPage(
             valueBoxOutput("day7_death"))
         ),
         # 7 day trend
-        box(width = 200,
-            h4("Latest News on COVID", align = 'center', style="font-weight: bold"),
-            br(),
-
-            fluidPage(
-              fluidRow(
-                column(width = 10, highchartOutput("covid_trend_7day"))
-              )
-            )),
-        box(width = 200,
+        box(width = 400,
             h4("Latest News on COVID", align = 'center', style="font-weight: bold"),
             br(),
             
             fluidPage(
               fluidRow(
-                column( width = 10,
-                        img(src="Crimes_news.png",width = "100%", height = "35%")),
-              )
-            )),
+                column(width = 6, highchartOutput("covid_trend_7day")),
+                column(width = 6,p(strong("COVID Omicron News: U.S. looking at possibility of fourth vaccine dose for some",style = "font-size: 27px;"),a(href="https://abc7ny.com/covid-vaccines-fourth-shot-new-york-vaccine-mandate/11583089/","Click for Link",target="_blank", style = "font-size: 13px;"),
+                                   br(),br(),
+                                   strong("Brooklyn gang members lived large on more than $4 million in stolen COVID unemployment funds", style = "font-size: 27px;"),
+                                   a(href="https://www.nydailynews.com/new-york/nyc-crime/ny-brooklyn-gang-members-stole-millions-in-covid-aid-20220218-poe5moloafht3azdzwfticm5xe-story.html","Click for Link",target="_blank",style = "font-size: 13px;"),
+                                   br(),br(),
+                                   strong("COVID Omicron News: Positivity rate continues to drop in Tri-State", style = "font-size: 27px;"),
+                                   a(href="https://abc7ny.com/positivity-rate-cdc-mask-guidance-school-masks-kathy-hochul/11588695/","Click for Link",target="_blank", style = "font-size: 13px;"),
+                                   br(),br(),
+                                   strong("Nearly 1,500 NYC municipal workers fired for not being vaccinated against COVID", style = "font-size: 27px;"),
+                                   a(href="https://abcnews.go.com/Health/1500-nyc-municipal-workers-fired-vaccinated-covid/story?id=82900617","Click for Link",target="_blank", style = "font-size: 13px;")
+                )
+                )
+              ))),
         # Overall view
         box(width = 400,
             h4("Covid Overall View", align = 'center', style="font-weight: bold"),
@@ -138,7 +139,8 @@ shinyUI(dashboardPage(
               fluidRow(
                 # Get Vaccinated!!!
                 column(width = 5,
-                       img(src="Crimes_news.png",width = "100%", height = "35%")),
+                       img(src="vaccine_slogan.png",width = "80%", height = "25%"),
+                       br(),br()),
                 # Vac bar chart
                 column(width = 5,highchartOutput("covid_vax_bar"))
               )
@@ -211,8 +213,16 @@ shinyUI(dashboardPage(
                         )
                       )
               ),
-              column( width = 5,
-                      img(src="Crimes_news.png",width = "100%", height = "35%")
+              column(width = 5,p(br(),br(),br(),
+                                 strong("More than 1,500 NYC inmates have been released during coronavirus crisis",style = "font-size: 27px;"),a(href="https://nypost.com/2020/04/10/more-than-1500-nyc-inmates-have-been-released-amid-coronavirus-crisis/","Click for Link",target="_blank", style = "font-size: 13px;"),
+                                 br(),br(),
+                                 strong("Scores of NYC inmates serving time on Rikers set for early release amid surging crime", style = "font-size: 27px;"),
+                                 a(href="https://www.dailyadvent.com/news/amp/c4ae64518b811be6052a5957b9e92cb6-Scores-of-NYC-inmates-serving-time-on-Rikers-set-for-early-release-amid-surging-crime","Click for Link",target="_blank",style = "font-size: 13px;"),
+                                 br(),br(),
+                                 strong("NY governor orders immediate release of 191 inmates from Rikers Island", style = "font-size: 27px;"),
+                                 a(href="https://thehill.com/homenews/state-watch/572771-ny-governor-orders-immediate-release-of-191-inmates-from-rikers-island","Click for Link",target="_blank", style = "font-size: 13px;")
+                                 
+              )
               ),
               br()
             )
