@@ -134,11 +134,14 @@ shinyUI(dashboardPage(
                 column(width = 5,highchartOutput("covid_vax_bar"))
               )
 
-            )
+            ),
             # Pie charts
-            # fluidRow(
-            #   # put up three pie chart
-            # )
+            fluidRow(
+              # put up three pie chart
+              column(plotlyOutput("pie_race")),
+              column(plotlyOutput("pie_age")),
+              column(plotlyOutput("pie_poverty"))
+            )
             
         ),
         

@@ -94,6 +94,12 @@ covid_data <- read.csv("../data/last7days-by-modzcta.csv")
 crime_data <- read.csv('../output/NYPD_Shooting_Data_Recent.csv')
 app_data <- read.csv("../output/Open_Restaurants.csv" )
 
+by_age <- read.csv(url("https://raw.githubusercontent.com/nychealth/coronavirus-data/master/totals/by-age.csv"))
+by_age <- as.data.frame(by_age)
+by_age <- by_age[-c(4,12),]
+by_poverty <- read.csv(url("https://raw.githubusercontent.com/nychealth/coronavirus-data/master/totals/by-poverty.csv"))
+by_race <- read.csv(url("https://raw.githubusercontent.com/nychealth/coronavirus-data/master/totals/by-race.csv"))
+
 ##############################################################################
 # Algorithm for Recommendation Rating System
 ##############################################################################
@@ -317,6 +323,49 @@ if (!input$cases & !input$hospital & !input$death){
                  )
   })
   
+  output$pie_age <- renderPlotly({
+    colors=RColorBrewer::brewer.pal(nrow(by_age),'Blues')
+    
+    fig <- plot_ly(by_age, labels = c('0-4_years', '5-12_years', '13-17_years', '18-24_years',
+                                      '25-34_years', '35-44_years', '45-44_years', '55-64_years',
+                                      '65-74_years', 'over_75_years'),
+                   values = ~(CONFIRMED_CASE_COUNT/sum(CONFIRMED_CASE_COUNT)), type = 'pie',
+                   marker = list(colors = colors))
+    fig %>% layout(title = 'Percent of people test positive by age',
+                   xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+                   yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+    
+  })
+  
+  
+  output$pie_poverty <- renderPlotly({
+    
+    
+    colors=RColorBrewer::brewer.pal(nrow(by_poverty),'Oranges')
+    
+    fig <- plot_ly(by_poverty, labels = c('Low_poverty', 'Medium_poverty', 'High_poverty', 'Very_high_poverty'),  
+                   values = ~(CONFIRMED_CASE_COUNT/sum(CONFIRMED_CASE_COUNT)), type = 'pie',
+                   marker = list(colors = colors))
+    fig %>% layout(title = 'Percent of people test positive by poverty',
+                   xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+                   yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+    
+  })
+  
+  
+  output$pie_race <- renderPlotly({
+    colors=RColorBrewer::brewer.pal(nrow(by_race),'Greens')    
+    
+    fig <- plot_ly(by_race, labels = c('Asian/Pacific-Islander', 
+                                       'Black/African-American	', 
+                                       'Hispanic/Latino', 'White'),
+                   values = ~(CONFIRMED_CASE_COUNT/sum(CONFIRMED_CASE_COUNT)), type = 'pie',
+                   marker = list(colors = colors))
+    fig %>% layout(title = 'percent of people test positive by race',
+                   xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+                   yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+    
+  })
   
   ##############################################################################
   # COVID Valuebox tab
