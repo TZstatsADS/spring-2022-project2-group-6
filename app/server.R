@@ -85,6 +85,8 @@ covid7day <- read.csv('../output/covid_last7day.csv')
 covid_total <- read.csv('../output/covid_total_case.csv')
 covid_trend_week <- read.csv("https://raw.githubusercontent.com/nychealth/coronavirus-data/master/trends/data-by-day.csv",
                              stringsAsFactors = F)
+covid_vax <- read.csv("https://raw.githubusercontent.com/nychealth/coronavirus-data/master/latest/breakthrough-summary.csv",
+                      stringsAsFactors = F)
 shootings_zipcodes <- read.csv('../output/Processed-shootings-zipcodes.csv')
 open_restaurants <- read.csv('../output/open_restaurants.csv')
 
@@ -167,23 +169,154 @@ app_data$rating <- round(rating1+rating2+rating3, digits = 1)
 ##############################################################################
 
 
-# Get Data
 shinyServer(function(input, output) {
   
   ##############################################################################
   # COVID tab - Graphs
   ##############################################################################
   
-  # output$covid_trend_total
-  # 
-  # See "output$bike_count_year" code
-  # 
-  # output$covid_trend_7day <- renderHighchart({
-  #   highchart() %>% 
-  #     
+ output$covid_trend_total <- renderHighchart({
+   c <- list(name = "Cases", data = covid_trend_week$CASE_COUNT,
+             color='#6581BF', marker = list(symbol = 'circle'))
+   h <- list(name = "Hospitalization", data = covid_trend_week$HOSPITALIZED_COUNT,
+             color='#02216f', marker = list(symbol = 'circle'))
+   d <- list(name = "Death", data = covid_trend_week$DEATH_COUNT,
+             color='#6581BF', marker = list(symbol = 'circle'))
+if (!input$cases & !input$hospital & !input$death){
+} else{
+  
+  if(input$cases){
+    if(input$hospital){
+      if(input$death){hc_chart(hc_series(highchart(),c, h, d), type = "line")}
+      else {hc_chart(hc_series(highchart(),c, h), type = "line")}
+    } else {hc_chart(hc_series(highchart(),c), type = "line")}
+  } else if(input$hospital) {
+    if(input$death){hc_chart(hc_series(highchart(),h, d), type = "line")}
+    else {hc_chart(hc_series(highchart(), h), type = "line")}
+  } else {hc_chart(hc_series(highchart(),d), type = "line")} %>% 
+    hc_exporting(enabled = T, formAttributes = list(target = "_blank")) %>% 
+    hc_xAxis(categories = unique(covid_trend_week$date_of_interest)) %>%
+    hc_yAxis(title = list(text = "Count")) %>%
+    hc_plotOptions(column = list(dataLabels = list(enabled = F), enableMouseTracking = T))%>%
+    hc_tooltip(table = TRUE, sort = TRUE,
+               # pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
+               #                       " {series.name}: {point.y}"),
+               # headerFormat = '<span style="font-size: 13px">Date {point.key}</span>'
+    ) %>%
+    hc_title(text = "COVID Total Trend") %>%
+    hc_legend(layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
+    hc_caption(align = 'center', style = list(color = "black"), text = 'To be changed')}
+ })
+  
+  # output$open_streets_dates <- renderHighchart({
+  #   if (input$per_day & input$aggregated){
+  #     highchart() %>%
+  #       hc_exporting(enabled = TRUE, formAttributes = list(target = "_blank")) %>%
+  #       hc_chart(type = 'line') %>%
+  #       hc_series( list(name = 'Per Day', data = open_streets_dates$Total_count, color='#6581BF', marker = list(symbol = 'circle') ),
+  #                  list(name = 'Aggregate', data =open_streets_dates_aggregate$Aggregate, color = '#02216f', marker = list(symbol = 'circle') )
+  #       )%>%
+        # hc_xAxis( categories = unique(open_streets_dates$StartDate) ) %>%
+        # hc_yAxis( title = list(text = "Number of approvals")) %>%
+        # hc_plotOptions(column = list(
+        #   dataLabels = list(enabled = F),
+        #   #stacking = "normal",
+        #   enableMouseTracking = T )
+        # )%>%
+        # hc_tooltip(table = TRUE,
+        #            sort = TRUE,
+        #            pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
+        #                                  " {series.name}: {point.y}"),
+        #            headerFormat = '<span style="font-size: 13px">Date {point.key}</span>'
+        # ) %>%
+        # hc_title(text = "Open Streets Approvals") %>%
+        # hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
+        # hc_caption( align = 'center', style = list(color = "black"), text = 'Caption')
+  #   }
+  #   else if (!input$per_day & !input$aggregated) {
+  #   }
+  #   else{
+  #     if (input$per_day){
+  #       use_name <- 'Per Day'
+  #       use_data <- open_streets_dates$Total_count
+  #       use_color <- '#6581BF'
+  #     }
+  #     if (input$aggregated){
+  #       use_name <- 'Aggregated'
+  #       use_data <- open_streets_dates_aggregate$Aggregate
+  #       use_color <- '#02216f'
+  #     }
+  #     highchart() %>%
+  #       hc_exporting(enabled = TRUE, formAttributes = list(target = "_blank")) %>%
+  #       hc_chart(type = 'line') %>%
+  #       hc_series( list(name = use_name, data = use_data, color=use_color, marker = list(symbol = 'circle') )
+  #       )%>%
+  #       hc_xAxis( categories = unique(open_streets_dates$StartDate) ) %>%
+  #       hc_yAxis( title = list(text = "Number of approvals")) %>%
+  #       hc_plotOptions(column = list(
+  #         dataLabels = list(enabled = F),
+  #         #stacking = "normal",
+  #         enableMouseTracking = T ) 
+  #       )%>%
+  #       hc_tooltip(table = TRUE,
+  #                  sort = TRUE,
+  #                  pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
+  #                                        " {series.name}: {point.y}"),
+  #                  headerFormat = '<span style="font-size: 13px">Date {point.key}</span>'
+  #       ) %>%
+  #       hc_title(text = "Open Streets Approvals") %>%
+  #       hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
+  #       hc_caption( align = 'center', style = list(color = "black"), text = 'Caption')
+  #   }
   # })
-  # 
-  # output$covid_vacc_bar
+  
+
+  output$covid_trend_7day <- renderHighchart({
+    highchart() %>%
+      hc_exporting(enabled = T, formAttributes = list(target = "_blank")) %>% 
+      hc_chart(type = "line") %>% 
+      hc_series(list(name = 'Case', data = covid_trend_week$CASE_COUNT %>% tail(7),
+                     color = "#0099ae", marker = list(symbol = 'circle')),
+                list(name = "Hospitalization", data = covid_trend_week$HOSPITALIZED_COUNT %>% tail(7),
+                     color = '#02216f', marker = list(symbol = 'circle')),
+                list(name = "Death", data = covid_trend_week$DEATH_COUNT %>% tail(7),
+                     color = '#6581BF', marker = list(symbol = 'circle'))) %>% 
+      hc_xAxis(categories = unique(covid_trend_week$date_of_interest)) %>% 
+      hc_yAxis(title = list(text = "Count")) %>% 
+      hc_plotOptions(column = list(dataLabels = list(enabled = F), enableMouseTracking = T)) %>% 
+      hc_tooltip(table = T, sort = T
+                 # pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
+                 #                       " {series.name}: {point.y}"),
+                 # headerFormat = '<span style="font-size: 13px">Year {point.key}</span>'
+                 ) %>%
+      hc_title(text = "COVID 7-Day Trend") %>% 
+      hc_legend(layout = "vertical", align = "left", verticalAlign = "top", 
+                floating = T, x = 50, y = 40) %>% 
+      hc_caption(align = 'center', style = list(color = "black"), text = 'Past Week')
+  })
+
+
+  output$covid_vax_bar <- renderHighchart({
+    covid_vax %>% select(measure, vax_count, unvax_count) %>% 
+      pivot_longer(cols = c(vax_count, unvax_count), names_to = "vax_type", values_to = "count") %>% 
+      hchart("column", hcaes(x = measure, y = count, group = vax_type)) %>% 
+      hc_chart(zoomType = "x") %>% 
+      hc_legend(align = "center", verticalAlign = "bottom",layout = "horizontal") %>%
+      hc_xAxis(title = list(text = "Type_can be changed")) %>%
+      hc_yAxis(title = list(text = "Count"),
+               max = covid_vax$unvax_count %>% max()) %>%
+      hc_title(text = "Unvaccinated People are getting more Covid!") %>%
+      hc_caption( align = 'center', style = list(color = "black"), text = 'can be added later')  %>%
+      hc_exporting(enabled = TRUE) %>%
+      hc_colors(c("#D7DCEA", "#A1B3D7", "#6581BF")) %>%
+      hc_tooltip(table = TRUE,
+                 sort = TRUE
+                 # pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
+                 #                       " {series.name}: {point.y}"),
+                 # headerFormat = '<span style="font-size: 13px">Trimester {point.key}</span>'
+                 )
+  })
+  
   
   ##############################################################################
   # COVID Valuebox tab

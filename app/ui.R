@@ -94,53 +94,53 @@ shinyUI(dashboardPage(
             valueBoxOutput("day7_hospital"),
             valueBoxOutput("day7_death"))
         ),
-        # # 7 day trend
-        # box(width = 400,
-        #     h4("Latest News on COVID", align = 'center', style="font-weight: bold"),
-        #     br(),
-        #     
-        #     fluidPage(
-        #       fluidRow( 
-        #         column(width = 5, highchartOutput("covid_trend_7day")),
-        #         column( width = 5,
-        #                 img(src="Crimes_news.png",width = "100%", height = "35%")),
-        #       )
-        #     )),
+        # 7 day trend
+        box(width = 400,
+            h4("Latest News on COVID", align = 'center', style="font-weight: bold"),
+            br(),
+
+            fluidPage(
+              fluidRow(
+                column(width = 5, highchartOutput("covid_trend_7day")),
+                column( width = 5,
+                        img(src="Crimes_news.png",width = "100%", height = "35%")),
+              )
+            )),
         # Overall view
-        # box(width = 400,
-        #     h4("Covid Overall View", align = 'center', style="font-weight: bold"),
-        #     br(),
-        #     
-        #     fluidPage(
+        box(width = 400,
+            h4("Covid Overall View", align = 'center', style="font-weight: bold"),
+            br(),
+
+            fluidPage(
         #       # Covid Overall Trend line Row
-        #       fluidRow(
-        #         column( width = 12,
-        #                 sidebarLayout(
-        #                   sidebarPanel(width = 2,
-        #                                checkboxInput("cases", label = "Cases", value = TRUE),
-        #                                checkboxInput("hospitcal", label = "Hospitalization", value = FALSE),
-        #                                checkboxInput("death", label = "Death", value = FALSE)
-        #                   ),
-        #                   mainPanel(highchartOutput("covid_trend_total"))
-        #                 )
-        #         )
-        #       ),
+              fluidRow(
+                column( width = 12,
+                        sidebarLayout(
+                          sidebarPanel(width = 2,
+                                       checkboxInput("cases", label = "Cases", value = TRUE),
+                                       checkboxInput("hospital", label = "Hospitalization", value = TRUE),
+                                       checkboxInput("death", label = "Death", value = TRUE)
+                          ),
+                          mainPanel(highchartOutput("covid_trend_total"))
+                        )
+                )
+              ),
         #       # Vacc info Row
-        #       fluidRow(
-        #         # Get Vaccinated!!!
-        #         column(width = 5,
-        #                img(src="Crimes_news.png",width = "100%", height = "35%")),
-        #         # Vac bar chart
-        #         column(width = 5,highchartOutput("covid_vacc_bar"))
-        #       )
-        #       
-        #     ),
+              fluidRow(
+                # Get Vaccinated!!!
+                column(width = 5,
+                       img(src="Crimes_news.png",width = "100%", height = "35%")),
+                # Vac bar chart
+                column(width = 5,highchartOutput("covid_vax_bar"))
+              )
+
+            )
             # Pie charts
             # fluidRow(
             #   # put up three pie chart
             # )
             
-        # ),
+        ),
         
         # Heatmap
         fluidPage(
