@@ -138,9 +138,9 @@ shinyUI(dashboardPage(
             # Pie charts
             fluidRow(
               # put up three pie chart
-              column(plotlyOutput("pie_race")),
-              column(plotlyOutput("pie_age")),
-              column(plotlyOutput("pie_poverty"))
+              column(width = 4, plotlyOutput("pie_race")),
+              column(width = 4, plotlyOutput("pie_age")),
+              column(width = 4, plotlyOutput("pie_poverty"))
             )
             
         ),
