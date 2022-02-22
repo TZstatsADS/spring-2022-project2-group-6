@@ -138,7 +138,7 @@ shinyUI(dashboardPage(
         #       # Vacc info Row
               fluidRow(
                 # Get Vaccinated!!!
-                column(width = 5,
+                column(width = 4,
                        img(src="vaccine_slogan.png",width = "80%", height = "25%"),
                        br(),br()),
                 # Vac bar chart
