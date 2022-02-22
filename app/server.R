@@ -435,9 +435,13 @@ shinyServer(function(input, output) {
                                        " {series.name}: {point.y}"),
                  headerFormat = '<span style="font-size: 13px">Month/Year {point.key}</span>'
       ) %>%
-      hc_title(text = "TITLE") %>%
+      hc_title(text = paste('How has the number of ', use_name, ' changed over time')) %>%
       hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
-      hc_caption( align = 'center', style = list(color = "black"), text = 'Caption')
+      hc_caption( align = 'center', style = list(color = "black"), text = "We observe that there are significantly less arrests after the onset of Covid than in the pre-Covid era. 
+                  However, if we look at the shootings plot, it is apparent that the number of shooting has largely increased. This trend could potentially be explained as follows: 
+                  as Covid strted spreading within prisons, a large number of inmates were released due to fear that a wide spread of Covid among inmates would jeopardize their health.")
+    
+    
   })
   
   
@@ -585,9 +589,10 @@ shinyServer(function(input, output) {
                                        " {series.name}: {point.y}"),
                  headerFormat = '<span style="font-size: 13px">Year {point.key}</span>'
       ) %>%
-      hc_title(text = "TITLE") %>%
+      hc_title(text = "Bike usage per year") %>%
       hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
-      hc_caption( align = 'center', style = list(color = "black"), text = '2021 had data only till August')
+      hc_caption( align = 'center', style = list(color = "black"), text = 'We observe that the number of bikes increased largely after Covid
+                  Bikes where counted on some specific main points of Manhattan and Brooklyn. For 2021, we have data till the end of August.')
   })
   
   output$bike_count_month <- renderHighchart({
@@ -607,7 +612,7 @@ shinyServer(function(input, output) {
       hc_xAxis(title = list(text = "Trimester")) %>%
       hc_yAxis(title = list(text = "Number of bikes"),
                max = max(bike_count_per_quarter_from_2017$Total_count)) %>%
-      hc_title(text = "TITLE") %>%
+      hc_title(text = "Bike usage per trimester per year") %>%
       hc_caption( align = 'center', style = list(color = "black"), text = '2021 had data only till August')  %>%
       hc_exporting(enabled = TRUE) %>%
       hc_colors(c("#D7DCEA", "#A1B3D7", "#6581BF", "#2F57AB", "#0B389D")) %>%
@@ -616,7 +621,9 @@ shinyServer(function(input, output) {
                  pointFormat = paste0( '<br> <span style="color:{point.color}">\u25CF</span>',
                                        " {series.name}: {point.y}"),
                  headerFormat = '<span style="font-size: 13px">Trimester {point.key}</span>'
-      )
+      ) %>%
+      hc_caption( align = 'center', style = list(color = "black"), text = 'We observe that for every trimester more bikes were used in 2020 and 2021 than before Covid. 
+                  Bikes where counted on some specific main points of Manhattan and Brooklyn. For 2021, we have data till the end of August, so we do not have data for the 3rd trimester of 2021.')
     
   })
   
@@ -679,18 +686,21 @@ shinyServer(function(input, output) {
         ) %>%
         hc_title(text = "Open Streets Approvals") %>%
         hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
-        hc_caption( align = 'center', style = list(color = "black"), text = 'Caption')
+        hc_caption( align = 'center', style = list(color = "black"), text = 'As more and more New Yorkers started using bikes for their commute, the Department of 
+                    Transportation proceeded to opening some streets (for specific days and times each week) only for cyclists and pedestrians.')
     }
     else if (!input$per_day & !input$aggregated) {
     }
     else{
       if (input$per_day){
         use_name <- 'Per Day'
+        name <- 'per day'
         use_data <- open_streets_dates$Total_count
         use_color <- '#6581BF'
       }
       if (input$aggregated){
         use_name <- 'Aggregated'
+        name <- 'in total'
         use_data <- open_streets_dates_aggregate$Aggregate
         use_color <- '#02216f'
       }
@@ -712,9 +722,11 @@ shinyServer(function(input, output) {
                                          " {series.name}: {point.y}"),
                    headerFormat = '<span style="font-size: 13px">Date {point.key}</span>'
         ) %>%
-        hc_title(text = "Open Streets Approvals") %>%
+        hc_title(text = paste("Open Streets Approvals ", name)) %>%
         hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
-        hc_caption( align = 'center', style = list(color = "black"), text = 'Caption')
+        hc_caption( align = 'center', style = list(color = "black"), text = 'Caption') %>%
+        hc_caption( align = 'center', style = list(color = "black"), text = 'As more and more New Yorkers started using bikes for their commute, the Department of 
+                    Transportation proceeded to opening some streets (for specific days and times each week) only for cyclists and pedestrians.')
     }
   })
   
@@ -746,10 +758,9 @@ shinyServer(function(input, output) {
       hc_chart(zoomType = "x") %>%
       hc_legend(align = "center", verticalAlign = "bottom",layout = "horizontal") %>%
       hc_xAxis(title = list(text = "Borough")) %>%
-      hc_yAxis(title = list(text = "Number of open restaurants"),
+      hc_yAxis(title = list(text = "Number of restaurants"),
                max = max(open_restaurants_borough$Total_count)) %>%
-      hc_title(text = "TITLE") %>%
-      hc_caption( align = 'center', style = list(color = "black"), text = 'caption')  %>%
+      hc_title(text = "Number of restaurants that have outside space per borough") %>%
       hc_exporting(enabled = TRUE) %>%
       hc_tooltip(table = TRUE,
                  sort = TRUE,
@@ -768,8 +779,7 @@ shinyServer(function(input, output) {
       hc_xAxis(title = list(text = "Borough")) %>%
       hc_yAxis(title = list(text = "Number of open resturants"),
                max = max(open_restaurants_seating_type$Total_count)) %>%
-      hc_title(text = "TITLE") %>%
-      hc_caption( align = 'center', style = list(color = "black"), text = '2021 had data only till August')  %>%
+      hc_title(text = "Number of restaurants per per type of outside space per borough") %>%
       hc_exporting(enabled = TRUE) %>%
       hc_colors(c("#c1cbb4", "#d6db90", "#789f52", "#2c5d37")) %>%
       hc_tooltip(table = TRUE,
@@ -837,9 +847,11 @@ shinyServer(function(input, output) {
                                          " {series.name}: {point.y}"),
                    headerFormat = '<span style="font-size: 13px">Date {point.key}</span>'
         ) %>%
-        hc_title(text = "Open Restaurant Applications") %>%
+        hc_title(text = "Applications for outside seating space") %>%
         hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
-        hc_caption( align = 'center', style = list(color = "black"), text = 'Caption')
+        hc_caption( align = 'center', style = list(color = "black"), text = 'As Covid started spreading and regulations about social distancings were enforced, 
+                    the only viable solution for restauransts to continue operating and being profitable was to have outside seating. To facilitate them the Department 
+                    of Transportation decided to approve restaurants for sidewalk and/or roadway seating.')
     }
     else if (!input$per_day_restaurants & !input$aggregated_restaurants) {
     }
@@ -872,9 +884,11 @@ shinyServer(function(input, output) {
                                          " {series.name}: {point.y}"),
                    headerFormat = '<span style="font-size: 13px">Date {point.key}</span>'
         ) %>%
-        hc_title(text = "Open Restaurant Applications") %>%
+        hc_title(text = "Applications for outside seating space") %>%
         hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
-        hc_caption( align = 'center', style = list(color = "black"), text = 'Caption')
+        hc_caption( align = 'center', style = list(color = "black"), text = 'As Covid started spreading and regulations about social distancings were enforced, 
+                    the only viable solution for restauransts to continue operating and being profitable was to have outside seating. To facilitate them the Department 
+                    of Transportation decided to approve restaurants for sidewalk and/or roadway seating.')
     }
   })
   

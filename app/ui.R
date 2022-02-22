@@ -96,14 +96,22 @@ shinyUI(dashboardPage(
             valueBoxOutput("day7_death"))
         ),
         # 7 day trend
-        box(width = 400,
+        box(width = 200,
             h4("Latest News on COVID", align = 'center', style="font-weight: bold"),
             br(),
 
             fluidPage(
               fluidRow(
-                column(width = 5, highchartOutput("covid_trend_7day")),
-                column( width = 5,
+                column(width = 10, highchartOutput("covid_trend_7day"))
+              )
+            )),
+        box(width = 200,
+            h4("Latest News on COVID", align = 'center', style="font-weight: bold"),
+            br(),
+            
+            fluidPage(
+              fluidRow(
+                column( width = 10,
                         img(src="Crimes_news.png",width = "100%", height = "35%")),
               )
             )),
@@ -175,13 +183,15 @@ shinyUI(dashboardPage(
       
       tabItem(
         tabName = "Crimes",
-        h4("Discussion about crimes and Covid"),
+        h1("How has Covid affected Crimes?", align = 'center'),
+        h3("It is a fact among New Yorkers that the Big Apple saw an increase in almost every category of major crime in 2021 with this trend continuing in 2022.", align = 'center'),
         box(width = 400,
-          h4("Number of arrests over time", align = 'center'),
-          br(),
           
+          br(),
           fluidPage(
             fluidRow( 
+              h4(""),
+              br(),
               column( width = 7,
                       sidebarLayout(
                         sidebarPanel(
@@ -193,6 +203,10 @@ shinyUI(dashboardPage(
                           )
                         ),
                         mainPanel(
+                          br(),
+                          br(),
+                          br(),
+                          br(),
                           highchartOutput("arrests_crimes_month_year")
                         )
                       )
@@ -201,22 +215,19 @@ shinyUI(dashboardPage(
                       img(src="Crimes_news.png",width = "100%", height = "35%")
               ),
               br()
-            ),
-            fluidRow( 
-              h5("Discuss plots", align = 'center', style="font-weight: bold")
             )
           )
         ),
         box(width = 400, 
-          h4("Title", align = 'center'),
+          h4("Number of shootings per zipcode", align = 'center', style = "font-size:20px;"),
           br(),
           fluidRow( 
             column( width = 6,
-                    h4("Shootings Sep-Dec 2019", align = 'center'),
+                    h4("Shootings in 2019", align = 'center'),
                     leafletOutput("shootings_map_2019") 
             ),
             column( width = 6,
-                    h4("Shootings Sep-Dec 2021", align = 'center'),
+                    h4("Shootings in 2021", align = 'center'),
                     leafletOutput("shootings_map_2021") 
             )
           )
@@ -225,11 +236,10 @@ shinyUI(dashboardPage(
       
       tabItem(
         tabName = "Bikes",
-        img(src="bikes_header.png",width = "100%", height = "35%"),
         h1("How has Covid affected bike usage?", align = 'center'),
-        
+        h3("As Covid started spreading and New Yorkers started to socially distance, they started looking at alternative ways to commute.", align = 'center'),
         box(width = 400,
-            h4("Number of bikes over time", align = 'center'),
+            h4("Bike usage over time", align = 'center', style = "font-size:20px;"),
             br(),
             
             fluidPage(
@@ -260,7 +270,7 @@ shinyUI(dashboardPage(
             )
         ),
         box(width = 400,
-            h4("Open Streets", align = 'center'),
+            h4("Open Streets for bikes and pedestrians", align = 'center', style = "font-size:20px;"),
             br(),
             
             fluidPage(
@@ -276,46 +286,43 @@ shinyUI(dashboardPage(
                             highchartOutput("open_streets_dates")
                           )
                         )
-                ),
+                )
+              ),
+              br(),
               fluidRow( 
                 column( width = 12,
-                        h3("TITLE", align = 'center'),
-                        leafletOutput("open_streets_map", width="100%", height=800)
+                        h3("Map with open streets", align = 'center'),
+                        leafletOutput("open_streets_map", width="100%", height=800),
+                        br(),
+                        h5("The blue lines represent the parts of the streets that are open. By clicking a blue line, the days and times the respective street 
+                           is open for cyclists and pedestrains will be displayed.", align = 'center')
                       )
-              ),
-                br(),
-                br(),
-                h5("Discuss plots", align = 'center', style="font-weight: bold")
+              )
             )
           )
-      )),
+      ),
       
       tabItem(
         tabName = "Restaurants",
-        h4("Discussion about restaurants and Covid"),
-        
-        # box(width = 400,
-        #     #DT::dataTableOutput("mytable")
-        # ),
+        h1("How has Covid affected restaurants?", align = 'center'),
+        h3("As Covid started spreading and regulations about social distancings were enforced, the only viable solution for restauransts to continue operating 
+           and being profitable was to have outside seating.", align = 'center'),
         box(width = 400,
-            h4("Title", align = 'center'),
+            h4("Number of restaurants with outside seating", align = 'center', style = "font-size:20px;"),
             br(),
             fluidRow( 
               column( width = 6,
-                      h4("Open restaurants by borough", align = 'center'),
                       highchartOutput("restaurants_borough")
               ),
               column( width = 6,
-                      h4("Open restaurants by additional seating type", align = 'center'),
                       highchartOutput("restaurants_seatings") 
               )
             )
         ),
         
         box(width = 400,
-            h4("Open Restaurants Applications", align = 'center'),
+            h4("When restaurants applied for outside seating space", align = 'center'),
             br(),
-            
             fluidPage(
               fluidRow( 
                 column( width = 12,
@@ -330,9 +337,7 @@ shinyUI(dashboardPage(
                           )
                         )
                 )
-            ),
-            fluidRow(
-              valueBoxOutput("vbox1", width = 2))
+            )
           )
       )),
       
