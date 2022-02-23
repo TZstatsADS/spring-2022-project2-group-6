@@ -194,16 +194,16 @@ shinyServer(function(input, output) {
     d <- list(name = "Death", data = covid_trend_week$DEATH_COUNT,
               color='#2F57AB', marker = list(symbol = 'circle'))
     if (!input$cases & !input$hospital & input$death){
-      hc_chart(hc_series(highchart(),d), type = "line")}
+      hc_chart(hc_series(highchart(),d), type = "line") %>% hc_xAxis(categories = unique(covid_trend_week$date_of_interest))}
     else {
       if(input$cases){
         if(input$hospital){
-          if(input$death){hc_chart(hc_series(highchart(),c, h, d), type = "line")}
-          else {hc_chart(hc_series(highchart(),c, h), type = "line")}
-        } else {hc_chart(hc_series(highchart(),c), type = "line")}
+          if(input$death){hc_chart(hc_series(highchart(),c, h, d), type = "line") %>% hc_xAxis(categories = unique(covid_trend_week$date_of_interest))}
+          else {hc_chart(hc_series(highchart(),c, h), type = "line") %>% hc_xAxis(categories = unique(covid_trend_week$date_of_interest))}
+        } else {hc_chart(hc_series(highchart(),c), type = "line") %>% hc_xAxis(categories = unique(covid_trend_week$date_of_interest))}
       } else if(input$hospital) {
-        if(input$death){hc_chart(hc_series(highchart(),h, d), type = "line")}
-        else {hc_chart(hc_series(highchart(), h), type = "line")}
+        if(input$death){hc_chart(hc_series(highchart(),h, d), type = "line") %>% hc_xAxis(categories = unique(covid_trend_week$date_of_interest))}
+        else {hc_chart(hc_series(highchart(), h), type = "line") %>% hc_xAxis(categories = unique(covid_trend_week$date_of_interest))}
       } else {} %>% 
         
         hc_exporting(enabled = T, formAttributes = list(target = "_blank")) %>% 
@@ -255,7 +255,7 @@ shinyServer(function(input, output) {
                max = covid_vax$unvax_prob %>% max()) %>%
       hc_title(text = "Percentage Number of Vaccinated and Unvaccinated People") %>%
       hc_caption( align = 'center', style = list(color = "black"), 
-                  text = 'Unvaccinated people are getting more covid!')  %>%
+                  text = ' Unvaccinated people are getting more covid!')  %>%
       hc_exporting(enabled = TRUE) %>%
       hc_colors(c("#D7DCEA", "#A1B3D7", "#6581BF")) %>%
       hc_tooltip(table = TRUE,
