@@ -100,7 +100,7 @@ shinyUI(dashboardPage(
           style = "background-color: white; opacity: 0.85; padding: 1%",
           h1("Everything on Covid", align = 'center'),
           h4("News and data about covid update quickly, we gathered and summrized
-             them to provid an overview of things you might want to know.", align = 'center')
+             them to provide an overview of things you might want to know.", align = 'center')
         ),
         fluidRow(br()),
         # Six Boxes
@@ -325,7 +325,7 @@ shinyUI(dashboardPage(
                         leafletOutput("open_streets_map", width="100%", height=800),
                         br(),
                         h5("The blue lines represent the parts of the streets that are open. By clicking a blue line, the days and times the respective street 
-                           is open for cyclists and pedestrains will be displayed.", align = 'center')
+                           is open for cyclists and pedestrians will be displayed.", align = 'center')
                       )
               )
             )
@@ -337,7 +337,7 @@ shinyUI(dashboardPage(
         fluidRow(
           style = "background-color: white; opacity: 0.75; padding: 1%",
           h1("How Has Covid Affected Restaurants?", align = 'center'),
-          h4("As Covid started spreading and regulations about social distancings were enforced, the only viable solution for restauransts to continue operating 
+          h4("As Covid started spreading and regulations about social distancing were enforced, the only viable solution for restauransts to continue operating 
            and being profitable was to have outside seating.", align = 'center')
         ),
         fluidRow(br()),
@@ -379,7 +379,7 @@ shinyUI(dashboardPage(
         tabName = "Restaurants_map",
         fluidRow(
           style = "background-color: white; opacity: 0.75; padding: 1%",
-          h1("Restaurants in the Neighborhood with Safty Score Rating"),
+          h1("Restaurants in the Neighborhood with Safety Score Rating"),
           h3("Type in your zipcode and find a safe restaurant nearby!")
         ),
         fluidRow(br()),
