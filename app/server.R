@@ -188,8 +188,9 @@ shinyServer(function(input, output) {
               color='#02216f', marker = list(symbol = 'circle'))
     d <- list(name = "Death", data = covid_trend_week$DEATH_COUNT,
               color='#6581BF', marker = list(symbol = 'circle'))
-    if (!input$cases & !input$hospital & !input$death){
-    } else{
+    if (!input$cases & !input$hospital & input$death){
+      hc_chart(hc_series(highchart(),d), type = "line")}
+    else {
       
       if(input$cases){
         if(input$hospital){
@@ -199,9 +200,9 @@ shinyServer(function(input, output) {
       } else if(input$hospital) {
         if(input$death){hc_chart(hc_series(highchart(),h, d), type = "line")}
         else {hc_chart(hc_series(highchart(), h), type = "line")}
-      } else if (input$death) {hc_chart(hc_series(highchart(),d), type = "line")} %>% 
+      } else {hc_chart(hc_series(highchart()), type = "line")} %>% 
         hc_exporting(enabled = T, formAttributes = list(target = "_blank")) %>% 
-        hc_xAxis(categories = unique(covid_trend_week$date_of_interest)) %>%
+        hc_xAxis(categories = unique(covid_trend_week$date_of_interest)) %>% 
         hc_yAxis(title = list(text = "Count")) %>%
         hc_plotOptions(column = list(dataLabels = list(enabled = F), enableMouseTracking = T))%>%
         hc_tooltip(table = TRUE, sort = TRUE,
