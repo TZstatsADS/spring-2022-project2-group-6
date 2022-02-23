@@ -582,8 +582,8 @@ shinyServer(function(input, output) {
                  list(name = 'Manhattan', data =bike_count_per_year_per_borough$Total_count[bike_count_per_year_per_borough$borough=='Manhattan'], color = '#02216f', marker = list(symbol = 'circle') ),
                  list(name = 'Brooklyn', data =bike_count_per_year_per_borough$Total_count[bike_count_per_year_per_borough$borough=='Brooklyn'], color = '#6581BF', marker = list(symbol = 'circle') )
       )%>%
-      hc_xAxis( categories = unique(bike_count_per_year_per_borough$Year) ) %>%
-      hc_yAxis( title = list(text = "Number of bikes")) %>%
+      hc_xAxis(categories = unique(bike_count_per_year_per_borough$Year) ) %>%
+      hc_yAxis(title = list(text = "Number of bikes")) %>%
       hc_plotOptions(column = list(
         dataLabels = list(enabled = F),
         #stacking = "normal",
@@ -611,7 +611,6 @@ shinyServer(function(input, output) {
     else if (input$bike_count_borough_month == 2){
       use_data <- subset(bike_count_per_quarter_from_2017_per_borough, borough=="Brooklyn")
     }
-    use_data %>% 
     hchart(use_data, "column",
            hcaes(x = Month, y = Total_count, group = Year)) %>%
       hc_chart(zoomType = "x") %>%
