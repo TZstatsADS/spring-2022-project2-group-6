@@ -192,11 +192,10 @@ shinyServer(function(input, output) {
     h <- list(name = "Hospitalization", data = covid_trend_week$HOSPITALIZED_COUNT,
               color='#02216f', marker = list(symbol = 'circle'))
     d <- list(name = "Death", data = covid_trend_week$DEATH_COUNT,
-              color='#6581BF', marker = list(symbol = 'circle'))
+              color='#2F57AB', marker = list(symbol = 'circle'))
     if (!input$cases & !input$hospital & input$death){
       hc_chart(hc_series(highchart(),d), type = "line")}
     else {
-      
       if(input$cases){
         if(input$hospital){
           if(input$death){hc_chart(hc_series(highchart(),c, h, d), type = "line")}
@@ -205,7 +204,8 @@ shinyServer(function(input, output) {
       } else if(input$hospital) {
         if(input$death){hc_chart(hc_series(highchart(),h, d), type = "line")}
         else {hc_chart(hc_series(highchart(), h), type = "line")}
-      } else {hc_chart(hc_series(highchart()), type = "line")} %>% 
+      } else {} %>% 
+        
         hc_exporting(enabled = T, formAttributes = list(target = "_blank")) %>% 
         hc_xAxis(categories = unique(covid_trend_week$date_of_interest)) %>% 
         hc_yAxis(title = list(text = "Count")) %>%
@@ -246,16 +246,16 @@ shinyServer(function(input, output) {
   
   
   output$covid_vax_bar <- renderHighchart({
-    covid_vax %>% select(measure, vax_prob, unvax_prob) %>% 
-      pivot_longer(cols = c(vax_prob, unvax_prob), names_to = "vax_type", values_to = "count") %>% 
+    covid_vax %>% select(measure, "Vaccinated" = vax_prob, "Unvaccinated" = unvax_prob) %>% 
+      pivot_longer(cols = c(Vaccinated, Unvaccinated), names_to = "vax_type", values_to = "count") %>% 
       hchart("column", hcaes(x = measure, y = count, group = vax_type)) %>% 
       hc_chart(zoomType = "x") %>% 
       hc_legend(align = "center", verticalAlign = "bottom",layout = "horizontal") %>%
-      hc_xAxis(title = list(text = "Type_can be changed")) %>%
-      hc_yAxis(title = list(text = "Count"),
+      hc_yAxis(title = list(text = "Percentage"),
                max = covid_vax$unvax_prob %>% max()) %>%
-      hc_title(text = "Unvaccinated People are getting more Covid!") %>%
-      hc_caption( align = 'center', style = list(color = "black"), text = 'can be added later')  %>%
+      hc_title(text = "Percentage Number of Vaccinated and Unvaccinated People") %>%
+      hc_caption( align = 'center', style = list(color = "black"), 
+                  text = 'Unvaccinated people are getting more covid!')  %>%
       hc_exporting(enabled = TRUE) %>%
       hc_colors(c("#D7DCEA", "#A1B3D7", "#6581BF")) %>%
       hc_tooltip(table = TRUE,
@@ -272,7 +272,7 @@ shinyServer(function(input, output) {
     fig <- plot_ly(by_age, labels = ~AGE_GROUP,
                    values = ~(CONFIRMED_CASE_COUNT/sum(CONFIRMED_CASE_COUNT)), type = 'pie',
                    marker = list(colors = colors))
-    fig %>% layout(title = 'Percent of people test positive by age',
+    fig %>% layout(title = 'Age Group',
                    legend = list(x = -1, y = 1))
     
   })
@@ -286,7 +286,7 @@ shinyServer(function(input, output) {
     fig <- plot_ly(by_poverty, labels = c('Low_poverty', 'Medium_poverty', 'High_poverty', 'Very_high_poverty'),  
                    values = ~(CONFIRMED_CASE_COUNT/sum(CONFIRMED_CASE_COUNT)), type = 'pie',
                    marker = list(colors = colors))
-    fig %>% layout(title = 'Percent of people test positive by poverty',
+    fig %>% layout(title = 'Poverty Group',
                    legend = list(x = -1, y = 1))
     
   })
@@ -300,7 +300,7 @@ shinyServer(function(input, output) {
                                        'Hispanic/Latino', 'White'),
                    values = ~(CONFIRMED_CASE_COUNT/sum(CONFIRMED_CASE_COUNT)), type = 'pie',
                    marker = list(colors = colors))
-    fig %>% layout(title = 'Percent of people test positive by race',
+    fig %>% layout(title = 'Race Group',
                    legend = list(x = -1, y = 1))
     
   })
@@ -441,7 +441,7 @@ shinyServer(function(input, output) {
                                        " {series.name}: {point.y}"),
                  headerFormat = '<span style="font-size: 13px">Month/Year {point.key}</span>'
       ) %>%
-      hc_title(text = paste('How has the number of ', use_name, ' changed over time')) %>%
+      hc_title(text = paste('How has the Number of ', use_name, ' Changed Over Time')) %>%
       hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
       hc_caption( align = 'center', style = list(color = "black"), text = "We observe that there are significantly less arrests after the onset of Covid than in the pre-Covid era. 
                   However, if we look at the shootings plot, it is apparent that the number of shooting has largely increased. This trend could potentially be explained as follows: 
@@ -595,7 +595,7 @@ shinyServer(function(input, output) {
                                        " {series.name}: {point.y}"),
                  headerFormat = '<span style="font-size: 13px">Year {point.key}</span>'
       ) %>%
-      hc_title(text = "Bike usage per year") %>%
+      hc_title(text = "Bike Usage per Year") %>%
       hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
       hc_caption( align = 'center', style = list(color = "black"), text = 'We observe that the number of bikes increased largely after Covid
                   Bikes where counted on some specific main points of Manhattan and Brooklyn. For 2021, we have data till the end of August.')
@@ -611,6 +611,7 @@ shinyServer(function(input, output) {
     else if (input$bike_count_borough_month == 2){
       use_data <- subset(bike_count_per_quarter_from_2017_per_borough, borough=="Brooklyn")
     }
+    use_data %>% 
     hchart(use_data, "column",
            hcaes(x = Month, y = Total_count, group = Year)) %>%
       hc_chart(zoomType = "x") %>%
@@ -618,7 +619,7 @@ shinyServer(function(input, output) {
       hc_xAxis(title = list(text = "Trimester")) %>%
       hc_yAxis(title = list(text = "Number of bikes"),
                max = max(bike_count_per_quarter_from_2017$Total_count)) %>%
-      hc_title(text = "Bike usage per trimester per year") %>%
+      hc_title(text = "Bike Usage per Trimester per Year") %>%
       hc_caption( align = 'center', style = list(color = "black"), text = '2021 had data only till August')  %>%
       hc_exporting(enabled = TRUE) %>%
       hc_colors(c("#D7DCEA", "#A1B3D7", "#6581BF", "#2F57AB", "#0B389D")) %>%
@@ -766,7 +767,7 @@ shinyServer(function(input, output) {
       hc_xAxis(title = list(text = "Borough")) %>%
       hc_yAxis(title = list(text = "Number of restaurants"),
                max = max(open_restaurants_borough$Total_count)) %>%
-      hc_title(text = "Number of restaurants that have outside space per borough") %>%
+      hc_title(text = "Number of Restaurants that Have Outside Space per Borough") %>%
       hc_exporting(enabled = TRUE) %>%
       hc_tooltip(table = TRUE,
                  sort = TRUE,
@@ -785,7 +786,7 @@ shinyServer(function(input, output) {
       hc_xAxis(title = list(text = "Borough")) %>%
       hc_yAxis(title = list(text = "Number of open resturants"),
                max = max(open_restaurants_seating_type$Total_count)) %>%
-      hc_title(text = "Number of restaurants per per type of outside space per borough") %>%
+      hc_title(text = "Number of Restaurants per Type of Outside Space per Borough") %>%
       hc_exporting(enabled = TRUE) %>%
       hc_colors(c("#c1cbb4", "#d6db90", "#789f52", "#2c5d37")) %>%
       hc_tooltip(table = TRUE,
@@ -853,7 +854,7 @@ shinyServer(function(input, output) {
                                          " {series.name}: {point.y}"),
                    headerFormat = '<span style="font-size: 13px">Date {point.key}</span>'
         ) %>%
-        hc_title(text = "Applications for outside seating space") %>%
+        hc_title(text = "Applications for Outside Seating Space") %>%
         hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
         hc_caption( align = 'center', style = list(color = "black"), text = 'As Covid started spreading and regulations about social distancings were enforced, 
                     the only viable solution for restauransts to continue operating and being profitable was to have outside seating. To facilitate them the Department 
