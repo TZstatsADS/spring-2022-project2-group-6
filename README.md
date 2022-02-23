@@ -16,7 +16,7 @@ The **learning goals** for this project is:
 
 *The above general statement about project 2 can be removed once you are finished with your project. It is optional.
 
-## Restaurant Safety Map
+## [Restaurant Safety Map](https://shylan.shinyapps.io/restaurant_safety_map/)
 + **Term**: Spring 2022
 + **Team #** Group 6
 + **Team members**: 
