@@ -392,11 +392,67 @@ shinyUI(dashboardPage(
       tabItem(
         tabName = "About",
         fluidPage(
-          h1("Team",align = "center", style="font-weight: bold"),
+          h1("Team", align = 'center'),
           br(),
-          h1("Data",align = "center", style="font-weight: bold"),
           br(),
-          h1("Code",align = "center", style="font-weight: bold")
+          fluidRow( 
+            column( width = 3,
+                    img(src="ani_yinan.png",width = "70%", height = "35%", style="display: block; margin-left: auto; margin-right: auto;"),
+                    h4(strong("Yinan Shi"), style = "font-size:22px;", align = 'center'),
+                    h4("ys3387@columbia.edu", style = "font-size:20px; color:blue;", align = 'center'),
+                    h4("LinkedIn | Twitter", style = "font-size:18px; color:blue;", align = 'center')
+            ),
+            column( width = 3,
+                      img(src="ani_silvia.png",width = "70%", height = "35%", style="display: block; margin-left: auto; margin-right: auto;"),
+                    h4(strong("Silvia Vlachou"), style = "font-size:22px;", align = 'center'),
+                    h4("vv2340@columbia.edu", style = "font-size:20px; color:blue;", align = 'center'),
+                    h4("LinkedIn | Twitter", style = "font-size:18px; color:blue;", align = 'center')
+            ),
+            column( width = 3,
+                    img(src="ani_xinran.png",width = "70%", height = "35%", style="display: block; margin-left: auto; margin-right: auto;"),
+                    h4(strong("Xinran Wang"), style = "font-size:22px;", align = 'center'),
+                    h4("xw2809@columbia.edu", style = "font-size:20px; color:blue;", align = 'center'),
+                    h4("LinkedIn | Twitter", style = "font-size:18px; color:blue;", align = 'center')
+            ),
+            column( width = 3,
+                    img(src="ani_jiachen.png",width = "70%", height = "35%", style="display: block; margin-left: auto; margin-right: auto;"),
+                    h4(strong("Jiachen Liu"), style = "font-size:22px;", align = 'center'),
+                    h4("jl5991@columbia.edu", style = "font-size:20px; color:blue;", align = 'center'),
+                    h4("LinkedIn | Twitter", style = "font-size:18px; color:blue;", align = 'center')
+            )
+          ),
+          fluidRow(
+            br(),
+            br(),
+            br()
+          ),
+          fluidRow(
+            h1("Resources", align = 'center'),
+            br(),
+            h4("Covid", style = "font-size: 24px;", align = 'center'),
+            h4(a(href="https://github.com/nychealth/coronavirus-data/","NYC Coronavirus Disease 2019 (COVID-19) Data",target="_blank", style = "font-size: 20px; color:blue;"), align = 'center'),
+            h4("Crimes", style = "font-size: 24px;", align = 'center'),
+            h4(a(href="https://data.cityofnewyork.us/Public-Safety/NYPD-Arrest-Data-Year-to-Date-/uip8-fykc","NYC Open Data - NYPD Arrest Data (Year to Date)",target="_blank", style = "font-size: 20px; color:blue;"), align = 'center'),
+            h4(a(href="https://data.cityofnewyork.us/Public-Safety/NYPD-Shooting-Incident-Data-Year-To-Date-/5ucz-vwe8","NYC Open Data - NYPD Shooting Incident Data (Year To Date)",target="_blank", style = "font-size: 20px; color:blue;"), align = 'center'),
+            h4("Bikes and Open Streets", style = "font-size: 24px;", align = 'center'),
+            h4(a(href="https://data.cityofnewyork.us/NYC-BigApps/Citi-Bike-System-Data/vsnr-94wk","Citi Bike System Data",target="_blank", style = "font-size: 20px; color:blue;"), align = 'center'),
+            h4(a(href="https://www1.nyc.gov/html/dot/html/bicyclists/bike-counts.shtml","NYC Bicycle Counts",target="_blank", style = "font-size: 20px; color:blue;"), align = 'center'),
+            h4(a(href="https://data.cityofnewyork.us/Health/Open-Streets-Locations/uiay-nctu","NYC Open Data - Open Streets Locations",target="_blank", style = "font-size: 20px; color:blue;"), align = 'center'),
+            h4("Restaurants", style = "font-size: 24px;", align = 'center'),
+            h4(a(href="https://data.cityofnewyork.us/Transportation/Open-Restaurant-Applications/pitm-atqc","NYC Open Data - Open Restaurant Applications",target="_blank", style = "font-size: 20px; color:blue;"), align = 'center'),
+            h4(a(href="https://www1.nyc.gov/html/dot/html/pedestrians/openrestaurants.shtml","NYC Open Restaurants",target="_blank", style = "font-size: 20px; color:blue;"), align = 'center'),
+            h4(a(href="https://data.cityofnewyork.us/Business/Sidewalk-Caf-Licenses-and-Applications/qcdj-rwhu","NYC Open Data - Sidewalk Café Licenses and Applications",target="_blank", style = "font-size: 20px; color:blue;"), align = 'center'),
+            h4("Images", style = "font-size: 24px;", align = 'center'),
+            h4(a(href="https://www.freepik.com/vectors/animal-set","freepik",target="_blank", style = "font-size: 20px; color:blue;"), align = 'center'),
+            h4(a(href="https://www.whcawical.org/getvaccinated/","WHCA-wiCAL",target="_blank", style = "font-size: 20px; color:blue;"), align = 'center'),
+            br(),
+            br()
+          ),
+          fluidRow(
+            h1("Code", align = 'center'),
+            br(),
+            h4(a(href="https://github.com/TZstatsADS/spring-2022-project2-group-6","https://github.com/TZstatsADS/spring-2022-project2-group-6",target="_blank", style = "font-size: 20px; color:blue;"), align = 'center')
+          )
         )
       )
     

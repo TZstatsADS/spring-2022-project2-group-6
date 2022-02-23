@@ -294,7 +294,7 @@ shinyServer(function(input, output) {
                                        'Hispanic/Latino', 'White'),
                    values = ~(CONFIRMED_CASE_COUNT/sum(CONFIRMED_CASE_COUNT)), type = 'pie',
                    marker = list(colors = colors))
-    fig %>% layout(title = 'percent of people test positive by race',
+    fig %>% layout(title = 'Percent of people test positive by race',
                    legend = list(x = -1, y = 1))
     
   })
