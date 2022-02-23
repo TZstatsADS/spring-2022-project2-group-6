@@ -340,7 +340,7 @@ shinyServer(function(input, output) {
   output$day7_case <- renderValueBox({
     valueBox(
       h4("7-Day Average Comfirmed Case", style="font-size: 24px"),
-      h3(covid_trend_week$CASE_COUNT %>% tail(1)),
+      h3(covid_trend_week$CASE_COUNT %>% tail(7) %>% mean() %>% round()),
       icon = icon("virus", lib = "font-awesome"),
       color = "red"
     )
@@ -349,7 +349,7 @@ shinyServer(function(input, output) {
   output$day7_hospital <- renderValueBox({
     valueBox(
       h4("7-Day Average Hospitalization", style="font-size: 24px"),
-      h3(covid_trend_week$HOSPITALIZED %>% tail(1)),
+      h3(covid_trend_week$HOSPITALIZED %>% tail(7) %>% mean() %>% round()),
       icon = icon("hospital", lib = "font-awesome"),
       color = "teal"
     )
@@ -358,7 +358,7 @@ shinyServer(function(input, output) {
   output$day7_death <- renderValueBox({
     valueBox(
       h4("7-Day Average Death", style="font-size: 24px"),
-      h3(covid_trend_week$DEATH_COUNT %>% tail(1)),
+      h3(covid_trend_week$DEATH_COUNT %>% tail(7) %>% mean() %>% round()),
       icon = icon("skull", lib = "font-awesome"),
       color = "black"
     )
