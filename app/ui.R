@@ -73,12 +73,18 @@ shinyUI(dashboardPage(
         tabName = "Home",
         fluidPage(
           setBackgroundImage(src = "TimeSquare_adj.jpg", shinydashboard = T),
-          h1("Project Title",align = "center", style="font-weight: bold"),
-          br(),
-          
-          fluidRow(
-            h4("Project descirption")
-          )
+          absolutePanel(id = "text", class = "foreground-content",
+                        top = "20%", left = "25%", width = "70%", fixed = F,
+                        draggable = F, height = 200,
+                        fluidRow(
+                          style = "padding 8%; background-color: white",
+                          h1("IT IS TIME", style = "color: #7b6f38; font-weight: bold; font-size: 50px; font-family = 'Cambria'"),
+                          h1("TO GET OUTSIDE!!!", style = "color: #5da1ab; font-weight: bold; font-size: 70px"),
+                          p("lets see what we can see"),
+                          # tags$p("just some random lines"),
+                          # tags$p("ahfjahfh")
+                        ),
+                        style = "opacity: 0.7")
         )
       ),
       
