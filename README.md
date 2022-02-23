@@ -27,6 +27,8 @@ The **learning goals** for this project is:
 
 + **Project summary**: As Covid started spreading in the Big Apple a lot has changed. Health safety regulations have been imposed by the government and health awareness has increased among New Yorkers who are trying to protect themselves and their loved ones by social distancing. As a measure against Covid, the Department of Transportation has opened streets exclusively for cyclists and pedestrians and has allowed restaurants to have outside seating space. However, these past months New York has also seen a great increase in crimes. Our goal is to help New Yorkers find restaurants that have outside space, are near streets open for cyclists and pedestrians, and are in safe neighbourhoods. We would like to see everyone stay healthy and safe!
 
++ **Shiny App**: [https://shylan.shinyapps.io/rsm2/](https://shylan.shinyapps.io/rsm2/)
+
 + **Contribution statement**: ([default](doc/a_note_on_contributions.md)) All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
      + Group: Met in person and brainstormed; Selected datasets from NYC Open Data Site and preprocessed them; Designed main topic; Presentation rehearsal; Helped each other with debugging.
      + Jiachen: Worked on Everyday Covid News Page; Produced Home page.
