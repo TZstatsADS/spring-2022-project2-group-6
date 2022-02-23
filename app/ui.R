@@ -85,10 +85,10 @@ shinyUI(dashboardPage(
                             been imposed by the government and health awareness has increased among New Yorkers who are 
                             trying to protect themselves and their loved ones by social distancing. As a measure against 
                             Covid, the Department of Transportation has opened streets exclusively for cyclists and pedestrians 
-                            and has allowed restaurants to have outside seating space. However, these pasts months New York has 
+                            and has allowed restaurants to have outside seating space. However, these past months New York has 
                             also seen a great increase in crimes. Our goal is to help New Yorkers find restaurants that have outside 
                             space, are near streets open for cyclists and pedestrians, and are in safe neighbourhoods, in an 
-                            effort help everyone stay healthy and safe!", style = "color: #666666; font-weight: italian; font-size: 15px"),
+                            effort to help everyone stay healthy and safe!", style = "color: #666666; font-weight: italian; font-size: 15px"),
                         ),
                         style = "opacity: 0.80")
         )
