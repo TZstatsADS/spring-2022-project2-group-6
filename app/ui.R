@@ -88,7 +88,7 @@ shinyUI(dashboardPage(
                             and has allowed restaurants to have outside seating space. However, these pasts months New York has 
                             also seen a great increase in crimes. Our goal is to help New Yorkers find restaurants that have outside 
                             space, are near streets open for cyclists and pedestrians, and are in safe neighbourhoods, in an 
-                            effort help everyone stay health and safe!", style = "color: #666666; font-weight: italian; font-size: 15px"),
+                            effort help everyone stay healthy and safe!", style = "color: #666666; font-weight: italian; font-size: 15px"),
                         ),
                         style = "opacity: 0.75")
         )
@@ -151,9 +151,9 @@ shinyUI(dashboardPage(
               fluidRow(
                 # Get Vaccinated!!!
                 column(width = 5,
-                       img(src="vaccine_slogan.png",width = "80%", height = "25%"),
+                       img(src="vaccine_slogan_adj.png", width = "80%", height = "25%"),
                        br(),br()),
-                # Vac bar chart
+                # Vac bar char
                 column(width = 5,highchartOutput("covid_vax_bar"))
               )
 
@@ -404,30 +404,30 @@ shinyUI(dashboardPage(
       tabItem(
         tabName = "About",
         fluidPage(
-          h1("TEAM", align = 'center', style = "color: #5da1ab; font-weight: bold; font-size: 40px;"),
+          h1("TEAM", align = 'center', style = "color: #7b6f38; font-weight: bold; font-size: 40px;"),
           br(),
           fluidRow( 
             column( width = 3,
                     img(src="ani_yinan.png",width = "70%", height = "35%", style="display: block; margin-left: auto; margin-right: auto;"),
-                    h4(strong("Yinan Shi"), style = "font-size:22px;", align = 'center'),
+                    h4(strong("Yinan Shi"), style = "color: #4b4b4b; font-size:22px;", align = 'center'),
                     h4("ys3387@columbia.edu", style = "font-size:20px; color:blue;", align = 'center'),
                     h4("LinkedIn | Twitter", style = "font-size:18px; color:blue;", align = 'center')
             ),
             column( width = 3,
                       img(src="ani_silvia.png",width = "70%", height = "35%", style="display: block; margin-left: auto; margin-right: auto;"),
-                    h4(strong("Silvia Vlachou"), style = "font-size:22px;", align = 'center'),
+                    h4(strong("Silvia Vlachou"), style = "color: #4b4b4b; font-size:22px;", align = 'center'),
                     h4("vv2340@columbia.edu", style = "font-size:20px; color:blue;", align = 'center'),
                     h4("LinkedIn | Twitter", style = "font-size:18px; color:blue;", align = 'center')
             ),
             column( width = 3,
                     img(src="ani_xinran.png",width = "70%", height = "35%", style="display: block; margin-left: auto; margin-right: auto;"),
-                    h4(strong("Xinran Wang"), style = "font-size:22px;", align = 'center'),
+                    h4(strong("Xinran Wang"), style = "color: #4b4b4b; font-size:22px;", align = 'center'),
                     h4("xw2809@columbia.edu", style = "font-size:20px; color:blue;", align = 'center'),
                     h4("LinkedIn | Twitter", style = "font-size:18px; color:blue;", align = 'center')
             ),
             column( width = 3,
                     img(src="ani_jiachen.png",width = "70%", height = "35%", style="display: block; margin-left: auto; margin-right: auto;"),
-                    h4(strong("Jiachen Liu"), style = "font-size:22px;", align = 'center'),
+                    h4(strong("Jiachen Liu"), style = "color: #4b4b4b; font-size:22px;", align = 'center'),
                     h4("jl5991@columbia.edu", style = "font-size:20px; color:blue;", align = 'center'),
                     h4("LinkedIn | Twitter", style = "font-size:18px; color:blue;", align = 'center')
             )

@@ -969,8 +969,7 @@ shinyServer(function(input, output) {
     }
     
     if(input$type == 'Total'){
-      return(covid_total %>% select(modzcta, "case" = COVID_CASE_COUNT,
-                                    "modzcta" = MODIFIED_ZCTA))
+      return(covid_total %>% select("modzcta" = MODIFIED_ZCTA, "case" = COVID_CASE_COUNT))
     }
   })
   
