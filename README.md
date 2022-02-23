@@ -2,7 +2,7 @@
 
 ### [Project Description](doc/project2_desc.md)
 
-![screenshot](doc/figs/map.jpg)
+![screenshot](output/Snipaste.png)
 
 In this second project of GR5243 Applied Data Science, we develop a *Exploratory Data Analysis and Visualization* shiny app on the work of a **NYC government agency/program** of your choice using NYC open data released on the [NYC Open Data By Agency](https://opendata.cityofnewyork.us/data/) website. In particular, many agencies have adjusted their work or rolled out new programs due to COVID, your app should provide ways for a user to explore quantiative measures of how covid has impacted daily life in NYC from different prospectives. See [Project 2 Description](doc/project2_desc.md) for more details.  
 
@@ -16,18 +16,17 @@ The **learning goals** for this project is:
 
 *The above general statement about project 2 can be removed once you are finished with your project. It is optional.
 
-## Project Title Lorem ipsum dolor sit amet
+## Restaurant Safety Map
 Term: Spring 2022
 
 + Team #
-+ **Projec title**: + Team members
-	+ team member 1
-	+ team member 2
-	+ team member 3
-	+ team member 4
-	+ team member 5
++ **Restaurant Safety Map**: 
+	+ Jiachen Liu
+	+ Yinan Shi
+	+ Xinran Wang
+	+ Silvia Vlachou
 
-+ **Project summary**: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
++ **Project summary**: As Covid started spreading in the Big Apple a lot has changed. Health safety regulations have been imposed by the government and health awareness has increased among New Yorkers who are trying to protect themselves and their loved ones by social distancing. As a measure against Covid, the Department of Transportation has opened streets exclusively for cyclists and pedestrians and has allowed restaurants to have outside seating space. However, these pasts months New York has also seen a great increase in crimes. Our goal is to help New Yorkers find restaurants that have outside space, are near streets open for cyclists and pedestrians, and are in safe neighbourhoods, in an effort help everyone stay healthy and safe!
 
 + **Contribution statement**: ([default](doc/a_note_on_contributions.md)) All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
 
