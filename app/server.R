@@ -445,7 +445,7 @@ shinyServer(function(input, output) {
       hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
       hc_caption( align = 'center', style = list(color = "black"), text = "We observe that there are significantly less arrests after the onset of Covid than in the pre-Covid era. 
                   However, if we look at the shootings plot, it is apparent that the number of shooting has largely increased. This trend could potentially be explained as follows: 
-                  as Covid strted spreading within prisons, a large number of inmates were released due to fear that a wide spread of Covid among inmates would jeopardize their health.")
+                  as Covid started spreading within prisons, a large number of inmates were released due to fear that a wide spread of Covid among inmates would jeopardize their health.")
     
     
   })
@@ -597,7 +597,7 @@ shinyServer(function(input, output) {
       ) %>%
       hc_title(text = "Bike Usage per Year") %>%
       hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
-      hc_caption( align = 'center', style = list(color = "black"), text = 'We observe that the number of bikes increased largely after Covid
+      hc_caption( align = 'center', style = list(color = "black"), text = 'We observe that the number of bikes increased largely after Covid.
                   Bikes where counted on some specific main points of Manhattan and Brooklyn. For 2021, we have data till the end of August.')
   })
   
@@ -855,8 +855,8 @@ shinyServer(function(input, output) {
         ) %>%
         hc_title(text = "Applications for Outside Seating Space") %>%
         hc_legend( layout = 'vertical', align = 'left', verticalAlign = 'top', floating = T, x = 50, y = 40 ) %>%
-        hc_caption( align = 'center', style = list(color = "black"), text = 'As Covid started spreading and regulations about social distancings were enforced, 
-                    the only viable solution for restauransts to continue operating and being profitable was to have outside seating. To facilitate them the Department 
+        hc_caption( align = 'center', style = list(color = "black"), text = 'As Covid started spreading and regulations about social distancing were enforced, 
+                    the only viable solution for restauransts to continue operating and being profitable was to have outside seating. To facilitate them, the Department 
                     of Transportation decided to approve restaurants for sidewalk and/or roadway seating.')
     }
     else if (!input$per_day_restaurants & !input$aggregated_restaurants) {
