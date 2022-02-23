@@ -263,7 +263,7 @@ shinyUI(dashboardPage(
         tabName = "Bikes",
         fluidRow(
           style = "background-color: white; opacity: 0.75; padding: 1%",
-          h1("How has Covid affected bike usage?", align = 'center'),
+          h1("How has Covid Affected Bike Usage?", align = 'center'),
           h4("As Covid started spreading and New Yorkers started to socially 
              distance, they started looking at alternative ways to commute.", align = 'center'),
         ),
