@@ -56,15 +56,15 @@ shinyUI(dashboardPage(
   dashboardSidebar(
     width = 270,
     sidebarMenu(
-      menuItem("Home", tabName = "Home", icon = icon("home")),
-      menuItem("Covid Overview", tabName = "Covid", icon = icon("virus")),
-      menuItem("Covid Effects", tabName = "Effects", icon = icon("chart-bar"),
+      menuItem("HOME", tabName = "Home", icon = icon("home")),
+      menuItem("RESTAURANTS SAFETY MAP", tabName = "Restaurants_map", icon = icon("map")),
+      menuItem("EVERYDAY COVID NEWS", tabName = "Covid", icon = icon("virus")),
+      menuItem("INTERESTING INFO", tabName = "Effects", icon = icon("chart-bar"),
                startExpanded = TRUE,
-               menuSubItem("How Covid has affected crimes", tabName = "Crimes", icon = icon("skull-crossbones")),
-               menuSubItem("How Covid has affected bike usage", tabName = "Bikes", icon = icon("biking")),
-               menuSubItem("How Covid has affected restaurants", tabName = "Restaurants", icon = icon("utensils"))),
-      menuItem("Restaurants Map", tabName = "Restaurants_map", icon = icon("map")),
-      menuItem("About", tabName="About", icon = icon("info"))
+               menuSubItem("COVID & CRIMES", tabName = "Crimes", icon = icon("skull-crossbones")),
+               menuSubItem("COVID & BIKES", tabName = "Bikes", icon = icon("biking")),
+               menuSubItem("COVID & RESTAURANTS", tabName = "Restaurants", icon = icon("utensils"))),
+      menuItem("ABOUT", tabName="About", icon = icon("info"))
     )
   ),
   dashboardBody(
@@ -74,17 +74,23 @@ shinyUI(dashboardPage(
         fluidPage(
           setBackgroundImage(src = "TimeSquare_adj.jpg", shinydashboard = T),
           absolutePanel(id = "text", class = "foreground-content",
-                        top = "20%", left = "25%", width = "70%", fixed = F,
+                        top = "25%", left = "25%", width = "70%", fixed = F,
                         draggable = F, height = 200,
                         fluidRow(
-                          style = "padding 8%; background-color: white",
-                          h1("IT IS TIME", style = "color: #7b6f38; font-weight: bold; font-size: 50px; font-family = 'Cambria'"),
-                          h1("TO GET OUTSIDE!!!", style = "color: #5da1ab; font-weight: bold; font-size: 70px"),
-                          p("lets see what we can see"),
-                          # tags$p("just some random lines"),
-                          # tags$p("ahfjahfh")
+                          style = "padding: 6%; background-color: white",
+                          h1("It is time to get outside!", style = "color: #7b6f38; font-weight: bold; font-size: 50px;"),
+                          h1("Find A Safe Restaurant Here!", style = "color: #5da1ab; font-weight: bold; font-size: 70px"),
+                          br(),
+                          p("As Covid started spreading in the Big Apple a lot has changed. Health safety regulations have 
+                            been imposed by the government and health awareness has increased among New Yorkers who are 
+                            trying to protect themselves and their loved ones by social distancing. As a measure against 
+                            Covid, the Department of Transportation has opened streets exclusively for cyclists and pedestrians 
+                            and has allowed restaurants to have outside seating space. However, these pasts months New York has 
+                            also seen a great increase in crimes. Our goal is to help New Yorkers find restaurants that have outside 
+                            space, are near streets open for cyclists and pedestrians, and are in safe neighbourhoods, in an 
+                            effort help everyone stay health and safe!", style = "color: #666666; font-weight: italian; font-size: 15px"),
                         ),
-                        style = "opacity: 0.7")
+                        style = "opacity: 0.75")
         )
       ),
       
@@ -398,8 +404,7 @@ shinyUI(dashboardPage(
       tabItem(
         tabName = "About",
         fluidPage(
-          h1("Team", align = 'center'),
-          br(),
+          h1("TEAM", align = 'center', style = "color: #5da1ab; font-weight: bold; font-size: 40px;"),
           br(),
           fluidRow( 
             column( width = 3,
@@ -433,7 +438,8 @@ shinyUI(dashboardPage(
             br()
           ),
           fluidRow(
-            h1("Resources", align = 'center'),
+            style = "padding 8%; background-color: white; opacity: 0.65",
+            h1("RESOURCES", align = 'center', style = "color: #7b6f38; font-weight: bold; font-size: 40px;"),
             br(),
             h4("Covid", style = "font-size: 24px;", align = 'center'),
             h4(a(href="https://github.com/nychealth/coronavirus-data/","NYC Coronavirus Disease 2019 (COVID-19) Data",target="_blank", style = "font-size: 20px; color:blue;"), align = 'center'),
@@ -455,7 +461,11 @@ shinyUI(dashboardPage(
             br()
           ),
           fluidRow(
-            h1("Code", align = 'center'),
+            br(),
+          ),
+          fluidRow(
+            style = "padding 8%; background-color: white; opacity: 0.65",
+            h1("CODE", align = 'center', style = "color: #7b6f38; font-weight: bold; font-size: 40px;"),
             br(),
             h4(a(href="https://github.com/TZstatsADS/spring-2022-project2-group-6","https://github.com/TZstatsADS/spring-2022-project2-group-6",target="_blank", style = "font-size: 20px; color:blue;"), align = 'center')
           )
