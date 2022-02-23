@@ -390,7 +390,8 @@ shinyUI(dashboardPage(
                                        min = 0,
                                        max = 10,
                                        value = c(5,8)
-                           )
+                           ),
+                           style = "opacity: 0.80"
                            
                          ),
                          

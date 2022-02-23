@@ -100,6 +100,11 @@ by_age <- by_age[-c(4,12),]
 by_poverty <- read.csv(url("https://raw.githubusercontent.com/nychealth/coronavirus-data/master/totals/by-poverty.csv"))
 by_race <- read.csv(url("https://raw.githubusercontent.com/nychealth/coronavirus-data/master/totals/by-race.csv"))
 
+#Data processing
+vax_sum <- covid_vax$vax_count +covid_vax$unvax_count
+covid_vax$vax_prob <- covid_vax$vax_count/(vax_sum)
+covid_vax$unvax_prob <- covid_vax$unvax_count/(vax_sum)
+
 ##############################################################################
 # Algorithm for Recommendation Rating System
 ##############################################################################
@@ -241,14 +246,14 @@ shinyServer(function(input, output) {
   
   
   output$covid_vax_bar <- renderHighchart({
-    covid_vax %>% select(measure, vax_count, unvax_count) %>% 
-      pivot_longer(cols = c(vax_count, unvax_count), names_to = "vax_type", values_to = "count") %>% 
+    covid_vax %>% select(measure, vax_prob, unvax_prob) %>% 
+      pivot_longer(cols = c(vax_prob, unvax_prob), names_to = "vax_type", values_to = "count") %>% 
       hchart("column", hcaes(x = measure, y = count, group = vax_type)) %>% 
       hc_chart(zoomType = "x") %>% 
       hc_legend(align = "center", verticalAlign = "bottom",layout = "horizontal") %>%
       hc_xAxis(title = list(text = "Type_can be changed")) %>%
       hc_yAxis(title = list(text = "Count"),
-               max = covid_vax$unvax_count %>% max()) %>%
+               max = covid_vax$unvax_prob %>% max()) %>%
       hc_title(text = "Unvaccinated People are getting more Covid!") %>%
       hc_caption( align = 'center', style = list(color = "black"), text = 'can be added later')  %>%
       hc_exporting(enabled = TRUE) %>%
